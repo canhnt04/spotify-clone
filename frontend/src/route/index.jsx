@@ -5,6 +5,7 @@ import Account from "../pages/Account";
 import NotFound from "../pages/NotFound";
 import CommingSoon from "../pages/CommingSoon";
 import HeaderOnly from "../layouts/HeaderOnly";
+
 export const routes = [
   // public route
   { path: "/", element: Home, isPrivate: false },

@@ -7,7 +7,7 @@ import MenuItem from "../../ui/Dropdown/MenuItem";
 import { useEffect, useState } from "react";
 const Sidebar = () => {
   const [visible, setVisible] = useState(false);
-  const isLogin = localStorage.getItem("authToken") ? true : false;
+  const isLogin = localStorage.getItem("accessToken") ? true : false;
   useEffect(() => {
     console.log("visible", visible);
   });

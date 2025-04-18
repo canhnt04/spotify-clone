@@ -3,10 +3,11 @@ import { Routes, Route } from "react-router-dom";
 import { routes } from "./route/index";
 import { Fragment } from "react";
 import RouteWrapper from "./route/RouteWrapper";
+import ToastProvider from "./contexts/ToastContext";
 
 function App() {
   return (
-    <>
+    <ToastProvider>
       <Routes>
         {routes.map((route, index) => {
           const Page = route.element;
@@ -31,7 +32,7 @@ function App() {
           );
         })}
       </Routes>
-    </>
+    </ToastProvider>
   );
 }
 

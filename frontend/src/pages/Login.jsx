@@ -1,7 +1,35 @@
 import Button from "../components/ui/Button/Button";
 import logo from "../assets/images/logo.jpg";
 import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { login } from "../apis/AuthService";
+import { ToastContext } from "../contexts/ToastContext";
+
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { toast } = useContext(ToastContext);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await login({
+        username,
+        password,
+      });
+
+      if (res.data) {
+        localStorage.setItem("accessToken", res.data.access);
+        localStorage.setItem("refreshToken", res.data.refresh);
+        toast.success(res.data.message);
+        setTimeout(() => (window.location.href = "/"), 2000);
+      }
+    } catch (error) {
+      toast.error("Đã xãy ra lỗi.");
+      console.log(error);
+    }
+  };
+
   return (
     <div className="bg-gradient-to-b from-zinc-900 to-black min-h-screen flex items-center justify-center">
       <div className="bg-zinc-950 p-10 rounded-lg w-full max-w-md text-white">
@@ -9,12 +37,14 @@ const Login = () => {
           <img src={logo} alt="Spotify" class="w-12 h-12 mb-4 rounded-full" />
           <h2 class="text-2xl font-bold">Đăng nhập vào Spotify</h2>
         </div>
-        <form class="space-y-4">
+        <form class="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label class="block text-sm font-semibold mb-1">
               Email hoặc tên người dùng
             </label>
             <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               type="text"
               class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
@@ -24,6 +54,8 @@ const Login = () => {
           <div>
             <label class="block text-sm font-semibold mb-1">Mật khẩu</label>
             <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               type="password"
               class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"

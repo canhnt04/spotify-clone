@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 const RouteWrapper = ({ children, isPrivate }) => {
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("accessToken");
   const currentPath = window.location.pathname;
 
   // Nếu là private route mà không có token → redirect đến login
@@ -9,7 +9,7 @@ const RouteWrapper = ({ children, isPrivate }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // ✅ Chỉ chặn vào các trang như /login, /signin nếu đã login
+  // Chỉ chặn vào các trang như /login, /signin nếu đã login
   const authPages = ["/login", "/signin"];
   if (authPages.includes(currentPath) && token) {
     return <Navigate to="/" replace />;

@@ -14,7 +14,7 @@ const MenuItem = ({ title, icon, to, href, onClick, header }) => {
     props.href = href;
   }
   return (
-    <Comp {...props} onClick={onClick} className="w-56">
+    <Comp {...props} onClick={onClick} className="max-w-full w-56">
       <div
         className={`flex items-center ${
           header ? "justify-between" : ""

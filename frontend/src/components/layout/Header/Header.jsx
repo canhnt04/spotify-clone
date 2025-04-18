@@ -19,10 +19,10 @@ const Header = () => {
   const [visible, setVisible] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("accessToken");
     window.location.reload();
   };
-  const isLogin = localStorage.getItem("authToken") ? true : false;
+  const isLogin = localStorage.getItem("accessToken") ? true : false;
   return (
     <header className="fixed top-0 left-0 right-0  bg-black text-white h-[64px] px-4 py-2 flex items-center justify-between shadow-md">
       {/* Left: Logo + Home + Search */}
