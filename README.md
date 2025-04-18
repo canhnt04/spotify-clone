@@ -1,32 +1,40 @@
 # spotify-clone
 
-# 1. Tạo virtual environment
+# Mở terminal với quyền administrator
+
+Set-ExecutionPolicy RemoteSigned
+
+# Tạo virtual environment
 
 python -m venv venv
 
-# 2. Di chuyển vào thư mục backend
-
-cd spotify-clone/backend
-
-# 3. Kích hoạt môi trường ảo (PowerShell)
+# Kích hoạt môi trường ảo (PowerShell)
 
 .\venv\Scripts\Activate.ps1
 
-# 4. Cài đặt các thư viện cần thiết
+# Cài đặt các thư viện cần thiết
 
 pip install -r requirements.txt
 
-# 5. Chạy migration để tạo các bảng trong CSDL
+# Di chuyển vào thư mục backend
+
+cd spotify-clone/backend
+
+# Chạy migration để tạo các bảng trong CSDL
 
 python manage.py migrate
 
-# 6. (Tùy chọn) Tạo tài khoản admin để đăng nhập trang quản trị
+# (Tùy chọn) Tạo tài khoản admin để đăng nhập trang quản trị
 
 python manage.py createsuperuser
 
-# 7. Chạy server
+# Chạy server
 
 python manage.py runserver
+
+# Hủy môi trường ảo
+
+deactivate
 
 # django-admin startapp accounts
 

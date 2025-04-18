@@ -8,14 +8,17 @@ User = get_user_model()
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(
-        required=True,
-        allow_blank=False,
         error_messages={
             "required": "Vui lòng nhập tên đăng nhập!",
             "blank": "Tên đăng nhập không được để trống!",
         },
     )
-    password = serializers.CharField(required=True, write_only=True)
+    password = serializers.CharField(
+        error_messages={
+            "required": "Vui lòng nhập mật khẩu!",
+            "blank": "Mật khẩu không được để trống!",
+        }
+    )
 
     def validate(self, attrs):
         username = attrs.get("username")
@@ -28,7 +31,8 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError({"password": "Sai mật khẩu!"})
         if not user.is_active:
             raise serializers.ValidationError({"username": "Tài khoản đã bị khóa!"})
-        return {"user": user}
+        attrs["user"] = user
+        return attrs
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -36,9 +40,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username", "email", "password"]
         extra_kwargs = {
-            "password": {"write_only": True},
-            "username": {"required": True},
-            "email": {"required": True},
+            "username": {"validators": []},
+            "email": {"validators": []},
+            "password": {"validators": []},
         }
 
     def validate(self, attrs):
@@ -46,6 +50,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         validator.validate_username(attrs.get("username"))
         validator.validate_email(attrs.get("email"))
         validator.validate_password(attrs.get("password"))
+        validator.validate_username_equal_password(
+            attrs.get("username"), attrs.get("password")
+        )
         return attrs
 
     def create(self, validated_data):
@@ -55,17 +62,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class UpdateUserSerializer(serializers.Serializer):
+class ProfileUpdateSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ["username", "email", "password", "avatar", "bio"]
-        extra_kwargs = {
-            "username": {"read_only": True},
-            "email": {"required": False},
-            "password": {"required": False},
-            "avatar": {"required": False},
-            "bio": {"required": False},
-        }
 
     def validate(self, attrs):
         validator = UserValidator(instance=self.instance)
@@ -83,5 +83,28 @@ class UpdateUserSerializer(serializers.Serializer):
             instance.set_password(validated_data["password"])
         instance.avatar = validated_data.get("avatar", instance.avatar)
         instance.bio = validated_data.get("bio", instance.bio)
+        instance.save()
+        return instance
+
+
+class GetAllUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "avatar", "bio"]
+
+
+class BanUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "is_active"]
+
+
+class UnbanUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "is_active"]
+
+    def update(self, instance, validated_data):
+        instance.is_active = validated_data.get("is_active", False)
         instance.save()
         return instance
