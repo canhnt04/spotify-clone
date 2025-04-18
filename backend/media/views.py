@@ -3,7 +3,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from serializers.song import SongCreateSerializer
+from media.serializers.song import SongCreateSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import cloudinary.uploader
 
