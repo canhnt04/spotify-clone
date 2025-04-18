@@ -1,11 +1,18 @@
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import LoginSerializer, RegisterSerializer, UpdateUserSerializer, GetAllUserSerializer, BanUserSerializer
+from .serializers import (
+    LoginSerializer,
+    RegisterSerializer,
+    ProfileUpdateSerializer,
+    GetAllUserSerializer,
+    BanUserSerializer,
+    UnbanUserSerializer,
+)
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
@@ -17,18 +24,14 @@ class LoginAPIView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data["user"]
             refresh = RefreshToken.for_user(user)
+
             return Response(
                 {
+                    "status": status.HTTP_200_OK,
                     "message": "Đăng nhập thành công!",
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                    "user": {
-                        "id": user.id,
-                        "username": user.username,
-                        "email": user.email,
-                        "avatar": user.avatar.url if user.avatar else None,
-                        "bio": user.bio,
-                    },
+                    "refreshToken": str(refresh),
+                    "accessToken": str(refresh.access_token),
+                    "userId": str(user.id),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -45,16 +48,8 @@ class RegisterAPIView(APIView):
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
+                    "status": status.HTTP_201_CREATED,
                     "message": "Đăng ký thành công!",
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                    "user": {
-                        "id": user.id,
-                        "username": user.username,
-                        "email": user.email,
-                        "avatar": user.avatar.url if user.avatar else None,
-                        "bio": user.bio,
-                    },
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -62,10 +57,12 @@ class RegisterAPIView(APIView):
 
 
 class ProfileAPIView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
+
         user_data = {
             "id": user.id,
             "username": user.username,
@@ -76,64 +73,88 @@ class ProfileAPIView(APIView):
         return Response(user_data, status=status.HTTP_200_OK)
 
 
-class UpdateProfileAPIView(APIView):
+class ProfileUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
         user = request.user
-        serializer = UpdateUserSerializer(user, data=request.data, partial=True)
+        serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response("Cập nhật thông tin thành công!", status=status.HTTP_200_OK)
+            return Response(
+                "Cập nhật thông tin cá nhân thành công!", status=status.HTTP_200_OK
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class UserListAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    
-    
-    def get(self,request):
+
+    def get(self, request):
         users = User.objects.all()
         serializer = GetAllUserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-   
+
 class UserSearchAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self ,search):
+    def get(self, search):
         users = User.objects.all()
         if search:
-            users = users.filter(username__icontains=search) | users.filter(email__icontains=search)
+            users = users.filter(username__icontains=search) | users.filter(
+                email__icontains=search
+            )
         serializer = GetAllUserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
 class BanUserAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, user_id):
         user = request.user
         if not user.is_superuser:
-            return Response({"message": "Bạn không có quyền thực hiện hành động này!"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"error": "Chỉ quản trị viên mới có thể thực hiện hành động này."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         try:
-            user_to_ban = User.objects.get(id=user_id)
-            user_to_ban.is_active = False
-            user_to_ban.save()
-            return Response({"message": "Người dùng đã bị khóa thành công!"}, status=status.HTTP_200_OK)
+            target_user = User.objects.get(id=user_id)
+            target_user.is_active = False
+            target_user.save()
+            return Response(
+                {"message": "Người dùng đã bị cấm thành công."},
+                status=status.HTTP_200_OK,
+            )
         except User.DoesNotExist:
-            return Response({"message": "Người dùng không tồn tại!"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Người dùng không tồn tại."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
 class UnbanUserAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, user_id):
         user = request.user
         if not user.is_superuser:
-            return Response({"message": "Bạn không có quyền thực hiện hành động này!"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"message": "Bạn không có quyền thực hiện hành động này!"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         try:
             user_to_ban = User.objects.get(id=user_id)
             user_to_ban.is_active = True
             user_to_ban.save()
-            return Response({"message": "Người dùng đã được mở khóa thành công!"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Người dùng đã được mở khóa thành công!"},
+                status=status.HTTP_200_OK,
+            )
         except User.DoesNotExist:
-            return Response({"message": "Người dùng không tồn tại!"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "Người dùng không tồn tại!"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
