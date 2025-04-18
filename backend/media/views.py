@@ -3,7 +3,8 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from media.serializers.song import SongCreateSerializer
+from media.models import Song
+from media.serializers.song import SongCreateSerializer,SongListSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import cloudinary.uploader
 
@@ -49,3 +50,15 @@ class SongCreateAPIView(APIView):
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SongListAPIView(APIView):
+    permission_classes = [AllowAny]    
+    def get(self, request):
+        # Retrieve all songs from the database
+        songs = Song.objects.all()
+        # Serialize the data
+        serializer = SongListSerializer(songs, many=True)
+        return Response(
+            {"message": "Danh sách bài hát", "data": serializer.data},
+            status=status.HTTP_200_OK
+        )
