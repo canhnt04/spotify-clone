@@ -1,4 +1,4 @@
-from warnings import filters
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -91,7 +91,7 @@ class UserListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
     
-    def get(self):
+    def get(self,request):
         users = User.objects.all()
         serializer = GetAllUserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

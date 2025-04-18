@@ -1,19 +1,34 @@
 from django.db import models
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 
 
+
+# class Song(models.Model):
+#     title = models.CharField(max_length=200, null=False, blank=False)
+#     artist = models.CharField(max_length=255, null=False, blank=False)
+#     genre = models.CharField(max_length=100, null=False, blank=False)
+#     thumbnail_url = models.URLField()
+#     audio_url = models.URLField()
+#     duration = models.PositiveIntegerField()
+#     album = models.ForeignKey("Album", on_delete=models.SET_NULL, null=True, blank=True)
+#     release_date = models.DateField()
+
+#     def __str__(self):
+#         return self.title
 class Song(models.Model):
-    title = models.CharField(max_length=200, null=False, blank=False)
-    artist = models.CharField(max_length=255, null=False, blank=False)
-    genre = models.CharField(max_length=100, null=False, blank=False)
-    thumbnail_url = models.URLField()
-    audio_url = models.URLField()
+    title = models.CharField(max_length=200)
+    artist = models.CharField(max_length=255)
+    genre = models.CharField(max_length=100)
+    thumbnail_url = CloudinaryField('image', blank=True, null=True)
+    audio_url = CloudinaryField('raw', blank=True, null=True)
     duration = models.PositiveIntegerField()
     album = models.ForeignKey("Album", on_delete=models.SET_NULL, null=True, blank=True)
     release_date = models.DateField()
 
     def __str__(self):
         return self.title
+
 
 
 class Video(models.Model):

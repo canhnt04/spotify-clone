@@ -10,6 +10,7 @@ from accounts.views import (
     BanUserAPIView,
     UnbanUserAPIView,
 )
+from media.views import SongCreateAPIView
 
 urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view()),
@@ -21,4 +22,5 @@ urlpatterns = [
     path("users/search/<str:search>/", UserSearchAPIView.as_view()),
     path("users/ban/<int:user_id>/", BanUserAPIView.as_view()),
     path("users/unban/<int:user_id>/", UnbanUserAPIView.as_view()),
+    path('song/', SongCreateAPIView.as_view()),
 ]
