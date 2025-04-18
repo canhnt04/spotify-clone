@@ -1,11 +1,11 @@
+from warnings import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import LoginSerializer, RegisterSerializer, UpdateUserSerializer
+from .serializers import LoginSerializer, RegisterSerializer, UpdateUserSerializer, GetAllUserSerializer, BanUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
 
 
@@ -86,3 +86,54 @@ class UpdateProfileAPIView(APIView):
             serializer.save()
             return Response("Cập nhật thông tin thành công!", status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    
+    def get(self):
+        users = User.objects.all()
+        serializer = GetAllUserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+   
+class UserSearchAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self ,search):
+        users = User.objects.all()
+        if search:
+            users = users.filter(username__icontains=search) | users.filter(email__icontains=search)
+        serializer = GetAllUserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class BanUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user = request.user
+        if not user.is_superuser:
+            return Response({"message": "Bạn không có quyền thực hiện hành động này!"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            user_to_ban = User.objects.get(id=user_id)
+            user_to_ban.is_active = False
+            user_to_ban.save()
+            return Response({"message": "Người dùng đã bị khóa thành công!"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"message": "Người dùng không tồn tại!"}, status=status.HTTP_404_NOT_FOUND)
+class UnbanUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user = request.user
+        if not user.is_superuser:
+            return Response({"message": "Bạn không có quyền thực hiện hành động này!"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            user_to_ban = User.objects.get(id=user_id)
+            user_to_ban.is_active = True
+            user_to_ban.save()
+            return Response({"message": "Người dùng đã được mở khóa thành công!"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"message": "Người dùng không tồn tại!"}, status=status.HTTP_404_NOT_FOUND)

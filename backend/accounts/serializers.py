@@ -59,13 +59,13 @@ class UpdateUserSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ["username", "email", "password", "avatar", "bio"]
-        extra_kwargs = {
-            "username": {"read_only": True},
-            "email": {"required": False},
-            "password": {"required": False},
-            "avatar": {"required": False},
-            "bio": {"required": False},
-        }
+        # extra_kwargs = {
+        #     "username": {"read_only": True},
+        #     "email": {"required": False},
+        #     "password": {"required": False},
+        #     "avatar": {"required": False},
+        #     "bio": {"required": False},
+        # }
 
     def validate(self, attrs):
         validator = UserValidator(instance=self.instance)
@@ -85,3 +85,25 @@ class UpdateUserSerializer(serializers.Serializer):
         instance.bio = validated_data.get("bio", instance.bio)
         instance.save()
         return instance
+
+class  GetAllUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "avatar", "bio"]
+
+class BanUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id","is_active"]
+class UnbanUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id","is_active"]       
+        
+    def update(self, instance, validated_data):
+        instance.is_active = validated_data.get('is_active', False)
+        instance.save()
+        return instance
+    
+
+     
