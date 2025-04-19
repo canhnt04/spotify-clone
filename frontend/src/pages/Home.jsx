@@ -1,6 +1,7 @@
 import React from "react";
 import List from "../components/ui/List/List";
-
+import ScaleLoader from "react-spinners/ScaleLoader";
+import MyModal from "../components/ui/MyModal/MyModal";
 const Home = () => {
   const songs = [
     {
