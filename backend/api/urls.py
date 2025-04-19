@@ -10,7 +10,7 @@ from accounts.views import (
     BanUserAPIView,
     UnbanUserAPIView,
 )
-from media.views import SongCreateAPIView,SongListAPIView
+from media.views import SongCreateAPIView,SongListAPIView,SongDetailAPIView,SongSearchSerializer,SongDeleteAPIView,SongUpdateSerializer
 
 urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view()),
@@ -23,5 +23,9 @@ urlpatterns = [
     path("users/ban/<int:user_id>/", BanUserAPIView.as_view()),
     path("users/unban/<int:user_id>/", UnbanUserAPIView.as_view()),
     path("song/upload/", SongCreateAPIView.as_view()),
-     path("song/list/", SongListAPIView.as_view()),
+    path("song/list/", SongListAPIView.as_view()),
+    path("song/detail/<str:song_id>/", SongDetailAPIView.as_view()),
+    path("song/search/<str:search>/", SongSearchSerializer.as_view()),
+    path("song/delete/<str:song_id>/", SongDeleteAPIView.as_view()),
+    path("song/update/<str:song_id>/", SongUpdateSerializer.as_view()),
 ]
