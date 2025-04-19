@@ -13,8 +13,9 @@ class Song(models.Model):
     audio_url = CloudinaryField("raw", blank=True, null=True)
     video_url = CloudinaryField("video", blank=True, null=True)
     duration = models.PositiveIntegerField()
+    download_count = models.PositiveIntegerField(default=0)
+    listen_count = models.IntegerField(default=0)
     created_at = models.DateField(auto_now_add=True)
-
     def __str__(self):
         return self.title
 
@@ -69,3 +70,4 @@ class Download(models.Model):
         else:
             item = "Unknown"
         return f"{self.user.username} download{item}"
+    

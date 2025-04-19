@@ -4,7 +4,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from media.models import Song
+from media.models import  Song
 from media.serializers.song import SongCreateSerializer,SongListSerializer,SongDetailSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import cloudinary.uploader
@@ -105,7 +105,7 @@ class SongDeleteAPIView(APIView):
                 {"message": "Bài hát không tồn tại."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-class SongUpdateSerializer(APIView):
+class SongUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
 
     def put(self, request, song_id):
@@ -152,5 +152,32 @@ class SongUpdateSerializer(APIView):
             return Response(
                 {"message": "Bài hát không tồn tại."},
                 status=status.HTTP_404_NOT_FOUND,
-            )            
-            
+            )    
+class SongListenAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, song_id):
+        try:
+            uuid_obj = UUID(song_id)
+            song = Song.objects.get(id=uuid_obj)          
+            song.listen_count += 1
+            song.save()
+
+            return Response(
+                {
+                    "status": status.HTTP_200_OK,
+                    "message": "Ghi nhận lượt nghe!",
+                    "listen_count": song.listen_count,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except Song.DoesNotExist:
+            return Response(
+                {"message": "Bài hát không tồn tại."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except ValueError:
+            return Response(
+                {"message": "ID bài hát không hợp lệ."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )                    

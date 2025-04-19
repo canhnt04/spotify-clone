@@ -46,3 +46,7 @@ class SongSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = ["id", "title", "artist", "genre", "thumbnail_url"]
+class SongListenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Song
+        fields = ["listen_count"]        
