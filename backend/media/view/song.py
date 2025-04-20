@@ -23,7 +23,7 @@ class SongCreateAPIView(APIView):
                 audio_response = cloudinary.uploader.upload(
                     audio_file, resource_type="raw"
                 )
-                serializer.validated_data["audio_url"] = audio_response.get("url")
+                serializer.validated_data["audio_url"] = audio_response.get("secure_url")
 
             # Xử lý tải lên tệp hình ảnh
             if "thumbnail_url" in request.FILES:
@@ -31,15 +31,15 @@ class SongCreateAPIView(APIView):
                 image_response = cloudinary.uploader.upload(
                     image_file, resource_type="image"
                 )
-                serializer.validated_data["thumbnail_url"] = image_response.get("url")
-
+                serializer.validated_data["thumbnail_url"] = image_response.get("secure_url")
+              
             if "video_url" in request.FILES:
                 video_file = request.FILES["video_url"]
                 video_response = cloudinary.uploader.upload(
                     video_file, resource_type="video"
                 )
-                serializer.validated_data["video_url"] = video_response.get("url")
-
+                serializer.validated_data["video_url"] = video_response.get("secure_url")
+            
             # Lưu dữ liệu vào cơ sở dữ liệu
             serializer.save()
             return Response(
@@ -63,6 +63,8 @@ class SongListAPIView(APIView):
             {"message": "Danh sách bài hát", "data": serializer.data},
             status=status.HTTP_200_OK
         )
+
+
 class SongDetailAPIView(APIView):
     permission_classes = [AllowAny]
     def get(self, request, song_id):
@@ -120,7 +122,7 @@ class SongUpdateAPIView(APIView):
                     audio_response = cloudinary.uploader.upload(
                         audio_file, resource_type="raw"
                     )
-                    serializer.validated_data["audio_url"] = audio_response.get("url")
+                    serializer.validated_data["audio_url"] = audio_response.get("secure_url")
 
                 # Xử lý tải lên tệp hình ảnh
                 if "thumbnail_url" in request.FILES:
@@ -128,14 +130,14 @@ class SongUpdateAPIView(APIView):
                     image_response = cloudinary.uploader.upload(
                         image_file, resource_type="image"
                     )
-                    serializer.validated_data["thumbnail_url"] = image_response.get("url")
+                    serializer.validated_data["thumbnail_url"] = image_response.get("secure_url")
 
                 if "video_url" in request.FILES:
                     video_file = request.FILES["video_url"]
                     video_response = cloudinary.uploader.upload(
                         video_file, resource_type="video"
                     )
-                    serializer.validated_data["video_url"] = video_response.get("url")
+                    serializer.validated_data["video_url"] = video_response.get("secure_url")
 
                 # Lưu dữ liệu vào cơ sở dữ liệu
                 serializer.save()
