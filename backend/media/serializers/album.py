@@ -35,9 +35,6 @@ class AlbumAddSongSerializer(serializers.Serializer):
         album = self.context.get("album")
         song = attrs["song"]
 
-        if not album:
-            raise serializers.ValidationError({"album": "Album không tồn tại!"})
-
         if not song:
             raise serializers.ValidationError({"song": "Bài hát không tồn tại!"})
 
@@ -61,9 +58,6 @@ class AlbumDeleteSongSerializer(serializers.Serializer):
     def validate(self, attrs):
         album = self.context.get("album")
         song = attrs["song"]
-
-        if not album:
-            raise serializers.ValidationError({"album": "Album không tồn tại!"})
 
         if song not in album.songs.all():
             raise serializers.ValidationError(

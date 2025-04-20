@@ -6,6 +6,13 @@ from .validators import UserValidator
 User = get_user_model()
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]
+        read_only_fields = ["id"]
+
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(
         error_messages={

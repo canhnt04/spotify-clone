@@ -43,7 +43,7 @@ class SongCreateAPIView(APIView):
                 {
                     "status": status.HTTP_201_CREATED,
                     "message": "Tạo bài hát thành công!",
-                    "data": serializer.data,
+                    "song": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
             )

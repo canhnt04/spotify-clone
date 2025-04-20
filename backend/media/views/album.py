@@ -1,6 +1,5 @@
-from uuid import UUID
 import cloudinary.uploader
-from media.models import Album, Song
+from media.models import Album
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -26,7 +25,6 @@ class AlbumListAPIView(APIView):
             serializer = AlbumListSerializer(albums, many=True)
             return Response(
                 {
-                    "status": status.HTTP_200_OK,
                     "message": "Lấy danh sách album thành công!",
                     "album": serializer.data,
                 },
@@ -35,7 +33,6 @@ class AlbumListAPIView(APIView):
         else:
             return Response(
                 {
-                    "status": status.HTTP_404_NOT_FOUND,
                     "message": "Không tìm thấy album nào!",
                 },
                 status=status.HTTP_404_NOT_FOUND,
@@ -51,7 +48,6 @@ class AlbumDetailAPIView(APIView):
             serializer = AlbumDetailSerializer(album)
             return Response(
                 {
-                    "status": status.HTTP_200_OK,
                     "message": "Lấy thông tin album thành công!",
                     "album": serializer.data,
                 },
@@ -60,7 +56,6 @@ class AlbumDetailAPIView(APIView):
         except Album.DoesNotExist:
             return Response(
                 {
-                    "status": status.HTTP_404_NOT_FOUND,
                     "message": "Album không tồn tại!",
                 },
                 status=status.HTTP_404_NOT_FOUND,
@@ -84,7 +79,6 @@ class AlbumCreateAPIView(APIView):
             album = serializer.save(creator=request.user)
             return Response(
                 {
-                    "status": status.HTTP_201_CREATED,
                     "message": "Tạo album thành công!",
                     "album": AlbumDetailSerializer(album).data,
                 },
@@ -92,7 +86,6 @@ class AlbumCreateAPIView(APIView):
             )
         return Response(
             {
-                "status": status.HTTP_400_BAD_REQUEST,
                 "message": "Tạo album không thành công!",
                 "errors": serializer.errors,
             },
@@ -109,7 +102,6 @@ class AlbumUpdateAPIView(APIView):
         except Album.DoesNotExist:
             return Response(
                 {
-                    "status": status.HTTP_404_NOT_FOUND,
                     "message": "Album không tồn tại!",
                 },
                 status=status.HTTP_404_NOT_FOUND,
@@ -138,7 +130,6 @@ class AlbumUpdateAPIView(APIView):
                 serializer.save()
                 return Response(
                     {
-                        "status": status.HTTP_200_OK,
                         "message": "Cập nhật album thành công!",
                         "album": serializer.data,
                     },
@@ -147,14 +138,12 @@ class AlbumUpdateAPIView(APIView):
             else:
                 return Response(
                     {
-                        "status": status.HTTP_200_OK,
                         "message": "Album không có thay đổi!",
                     },
                     status=status.HTTP_200_OK,
                 )
         return Response(
             {
-                "status": status.HTTP_400_BAD_REQUEST,
                 "message": "Cập nhật album không thành công!",
                 "errors": serializer.errors,
             },
@@ -171,7 +160,6 @@ class AlbumDeleteAPIView(APIView):
             if album.creator != request.user:
                 return Response(
                     {
-                        "status": status.HTTP_403_FORBIDDEN,
                         "message": "Bạn không có quyền xóa album này!",
                     },
                     status=status.HTTP_403_FORBIDDEN,
@@ -180,7 +168,6 @@ class AlbumDeleteAPIView(APIView):
             album.delete()
             return Response(
                 {
-                    "status": status.HTTP_204_NO_CONTENT,
                     "message": "Xóa album thành công!",
                 },
                 status=status.HTTP_204_NO_CONTENT,
@@ -188,7 +175,6 @@ class AlbumDeleteAPIView(APIView):
         except Album.DoesNotExist:
             return Response(
                 {
-                    "status": status.HTTP_404_NOT_FOUND,
                     "message": "Album không tồn tại!",
                 },
                 status=status.HTTP_404_NOT_FOUND,
@@ -204,7 +190,6 @@ class AlbumAddSongAPIView(APIView):
         except Album.DoesNotExist:
             return Response(
                 {
-                    "status": status.HTTP_404_NOT_FOUND,
                     "message": "Album không tồn tại!",
                 },
                 status=status.HTTP_404_NOT_FOUND,
@@ -216,7 +201,6 @@ class AlbumAddSongAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "status": 201,
                     "message": "Thêm bài hát vào album thành công!",
                 },
                 status=status.HTTP_201_CREATED,
@@ -224,7 +208,6 @@ class AlbumAddSongAPIView(APIView):
         else:
             return Response(
                 {
-                    "status": status.HTTP_400_BAD_REQUEST,
                     "message": "Thêm bài hát vào album không thành công!",
                     "errors": serializer.errors,
                 },
@@ -241,7 +224,6 @@ class AlbumDeleteSongAPIView(APIView):
         except Album.DoesNotExist:
             return Response(
                 {
-                    "status": status.HTTP_404_NOT_FOUND,
                     "message": "Album không tồn tại!",
                 },
                 status=status.HTTP_404_NOT_FOUND,
@@ -253,7 +235,6 @@ class AlbumDeleteSongAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "status": status.HTTP_200_OK,
                     "message": "Xóa bài hát khỏi album thành công!",
                     "album-song": serializer.data,
                 },
@@ -262,7 +243,6 @@ class AlbumDeleteSongAPIView(APIView):
 
         return Response(
             {
-                "status": status.HTTP_400_BAD_REQUEST,
                 "message": "Xóa bài hát khỏi album không thành công!",
                 "errors": serializer.errors,
             },
@@ -281,7 +261,6 @@ class AlbumSearchAPIView(APIView):
         serializer = AlbumListSerializer(albums, many=True)
         return Response(
             {
-                "status": status.HTTP_200_OK,
                 "message": "Lấy danh sách album thành công!",
                 "data": serializer.data,
             },
