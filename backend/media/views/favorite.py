@@ -71,10 +71,10 @@ class FavoriteCreateAPIView(APIView):
 class FavoriteDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, favorite_id):
+    def delete(self, request, song_id):
         user = request.user
         try:
-            favorite = Favorite.objects.get(id=favorite_id, user=user)
+            favorite = Favorite.objects.get(user=user, song=song_id)
             favorite.delete()
             return Response(
                 {
