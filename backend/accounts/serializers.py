@@ -62,27 +62,26 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class ProfileUpdateSerializer(serializers.Serializer):
+class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "password", "avatar", "bio"]
+        fields = ["last_name", "first_name", "password", "avatar"]
 
     def validate(self, attrs):
         validator = UserValidator(instance=self.instance)
-
-        if "email" in attrs:
-            validator.validate_email(attrs["email"])
         if "password" in attrs:
             validator.validate_password(attrs["password"])
-
         return attrs
 
     def update(self, instance, validated_data):
-        instance.email = validated_data.get("email", instance.email)
-        if validated_data.get("password"):
-            instance.set_password(validated_data["password"])
-        instance.avatar = validated_data.get("avatar", instance.avatar)
-        instance.bio = validated_data.get("bio", instance.bio)
+        validated_data.pop("id", None)
+        validated_data.pop("username", None)
+        validated_data.pop("email", None)
+        password = validated_data.pop("password", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.set_password(password)
         instance.save()
         return instance
 
@@ -90,19 +89,30 @@ class ProfileUpdateSerializer(serializers.Serializer):
 class GetAllUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "avatar", "bio"]
+        fields = ["id", "username", "email", "last_name", "first_name", "avatar"]
+
+
+class GetUserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "last_name", "first_name", "avatar"]
 
 
 class BanUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "is_active"]
+        fields = ["is_active"]
+
+    def update(self, instance, validated_data):
+        instance.is_active = validated_data.get("is_active", True)
+        instance.save()
+        return instance
 
 
 class UnbanUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "is_active"]
+        fields = ["is_active"]
 
     def update(self, instance, validated_data):
         instance.is_active = validated_data.get("is_active", False)

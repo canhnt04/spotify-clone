@@ -22,12 +22,12 @@ class Song(models.Model):
 class Album(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name="albums")
     description = models.TextField(blank=True)
+    songs = models.ManyToManyField(Song, blank=True, related_name="albums")
+    thumbnail_url = CloudinaryField("image", blank=True, null=True)
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="albums"
     )
-    cover_image_url = models.URLField(blank=True)
     created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -35,6 +35,7 @@ class Album(models.Model):
 
 
 class Favorite(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites"
     )
@@ -51,6 +52,7 @@ class Favorite(models.Model):
 
 
 class Download(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="downloads"
     )

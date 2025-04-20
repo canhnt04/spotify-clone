@@ -20,6 +20,10 @@ pip install -r requirements.txt
 
 cd spotify-clone/backend
 
+# Setup file migrations
+
+python manage.py makemigrations
+
 # Chạy migration để tạo các bảng trong CSDL
 
 python manage.py migrate
@@ -36,32 +40,10 @@ python manage.py runserver
 
 deactivate
 
-# django-admin startapp accounts
+# Export database
 
-Tạo app accounts để xử lý chức năng liên quan đến người dùng:
+python manage.py dumpdata --indent 4 > data.json
 
-Đăng ký, đăng nhập
+# Import database
 
-Thông tin cá nhân (profile)
-
-Xác thực, phân quyền
-
-# django-admin startapp media
-
-Tạo app media để quản lý nội dung đa phương tiện:
-
-Bài hát (Song)
-
-Video âm nhạc (Video)
-
-Nghệ sĩ (Artist)
-
-Thể loại (Genre)
-
-# django-admin startapp usercontent
-
-Tạo app usercontent cho nội dung người dùng tạo:
-
-Tạo album
-
-Danh sách bài hát yêu thích (Favorites)
+python manage.py loaddata data.json

@@ -15,54 +15,130 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Song',
+            name="Song",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('artist', models.CharField(max_length=255)),
-                ('genre', models.CharField(max_length=100)),
-                ('lyrics', models.TextField()),
-                ('language', models.CharField(max_length=50)),
-                ('play_count', models.PositiveIntegerField(default=0)),
-                ('release_date', models.DateField()),
-                ('thumbnail_url', models.URLField()),
-                ('audio_url', models.URLField()),
-                ('video_url', models.URLField(blank=True)),
-                ('duration', models.PositiveIntegerField()),
-                ('created_at', models.DateField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("artist", models.CharField(max_length=255)),
+                ("genre", models.CharField(max_length=100)),
+                ("lyrics", models.TextField()),
+                ("language", models.CharField(max_length=50)),
+                ("play_count", models.PositiveIntegerField(default=0)),
+                ("release_date", models.DateField()),
+                ("thumbnail_url", models.URLField()),
+                ("audio_url", models.URLField()),
+                ("video_url", models.URLField(blank=True)),
+                ("duration", models.PositiveIntegerField()),
+                ("created_at", models.DateField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Download',
+            name="Download",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('download_at', models.DateTimeField(auto_now_add=True)),
-                ('song', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='downloads', to='media.song')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='downloads', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("download_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "song",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="downloads",
+                        to="media.song",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="downloads",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Album',
+            name="Album",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True)),
-                ('cover_image_url', models.URLField(blank=True)),
-                ('created_at', models.DateField(auto_now_add=True)),
-                ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='albums', to=settings.AUTH_USER_MODEL)),
-                ('song', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='albums', to='media.song')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True)),
+                ("cover_image_url", models.URLField(blank=True)),
+                ("created_at", models.DateField(auto_now_add=True)),
+                (
+                    "creator",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="albums",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "song",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="albums",
+                        to="media.song",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Favorite',
+            name="Favorite",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('song', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorited_by', to='media.song')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorites', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "song",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="favorited_by",
+                        to="media.song",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="favorites",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'song')},
+                "unique_together": {("user", "song")},
             },
         ),
     ]
