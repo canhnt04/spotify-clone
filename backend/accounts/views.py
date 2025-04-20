@@ -28,15 +28,21 @@ class LoginAPIView(APIView):
 
             return Response(
                 {
-                    "status": status.HTTP_200_OK,
                     "message": "Đăng nhập thành công!",
                     "refreshToken": str(refresh),
                     "accessToken": str(refresh.access_token),
                     "userId": str(user.id),
+                    "full_name": f"{user.last_name} {user.first_name}",
                 },
                 status=status.HTTP_200_OK,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "message": "Đăng nhập thất bại!",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class RegisterAPIView(APIView):
@@ -48,19 +54,17 @@ class RegisterAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "status": status.HTTP_201_CREATED,
                     "message": "Đăng ký thành công!",
                 },
                 status=status.HTTP_201_CREATED,
             )
         return Response(
-                {
-                    "status": status.HTTP_400_BAD_REQUEST,
-                    "message": "Đăng ký thất bại. Kiểm tra lại thông tin.",
-                    "errors": serializer.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            {
+                "message": "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class ProfileAPIView(APIView):
@@ -72,7 +76,6 @@ class ProfileAPIView(APIView):
 
         return Response(
             {
-                "status": status.HTTP_200_OK,
                 "message": "Lấy thông tin thành công!",
                 "user": {
                     "id": user.id,
@@ -80,6 +83,7 @@ class ProfileAPIView(APIView):
                     "email": user.email,
                     "last_name": user.last_name,
                     "first_name": user.first_name,
+                    "fullname": f"{user.last_name} {user.first_name}",
                     "avatar": user.avatar.url if user.avatar else None,
                 },
             },
@@ -97,7 +101,6 @@ class ProfileUpdateAPIView(APIView):
             serializer.save()
             return Response(
                 {
-                    "status": status.HTTP_200_OK,
                     "message": "Cập nhật thông tin thành công!",
                     "user": {
                         "id": user.id,
@@ -110,7 +113,13 @@ class ProfileUpdateAPIView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "message": "Cập nhật thông tin thất bại!",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class UserListAPIView(APIView):
@@ -121,7 +130,6 @@ class UserListAPIView(APIView):
         serializer = GetAllUserSerializer(users, many=True)
         return Response(
             {
-                "status": status.HTTP_200_OK,
                 "message": "Lấy danh sách người dùng thành công!",
                 "users": serializer.data,
             },
@@ -157,7 +165,6 @@ class UserSearchAPIView(APIView):
         serializer = GetAllUserSerializer(users, many=True)
         return Response(
             {
-                "status": status.HTTP_200_OK,
                 "message": "Lấy danh sách người dùng thành công!",
                 "users": serializer.data,
             },
