@@ -45,10 +45,12 @@ class LoginSerializer(serializers.Serializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "password"]
+        fields = ["username", "email", "last_name", "first_name", "password"]
         extra_kwargs = {
             "username": {"validators": []},
             "email": {"validators": []},
+            "last_name": {"validators": []},
+            "first_name": {"validators": []},
             "password": {"validators": []},
         }
 
@@ -56,6 +58,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         validator = UserValidator()
         validator.validate_username(attrs.get("username"))
         validator.validate_email(attrs.get("email"))
+        validator.validate_lastname(attrs.get("last_name"))
+        validator.validate_firstname(attrs.get("first_name"))
         validator.validate_password(attrs.get("password"))
         validator.validate_username_equal_password(
             attrs.get("username"), attrs.get("password")
