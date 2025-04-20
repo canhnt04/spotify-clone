@@ -4,6 +4,7 @@ import Song from "../../ui/Song/Song";
 import Tippy from "@tippyjs/react/headless";
 import Dropdown from "../../ui/Dropdown/Dropdown";
 import MenuItem from "../../ui/Dropdown/MenuItem";
+import MyModal from "../../ui/MyModal/MyModal";
 import { useEffect, useState } from "react";
 const Sidebar = () => {
   const [visible, setVisible] = useState(false);
@@ -25,7 +26,16 @@ const Sidebar = () => {
           render={(attrs) => (
             <Dropdown>
               <MenuItem title={"Tạo album"} icon={<ListMusic size={24} />} />
-              <MenuItem title={"Upload bài hát"} icon={<Upload size={24} />} />
+              <MenuItem
+                to={"/song/upload"}
+                title={"Upload bài hát/video"}
+                icon={<Upload size={24} />}
+                onClick={() => (
+                  <MyModal open={true}>
+                    <h1>Hello</h1>
+                  </MyModal>
+                )}
+              />
               <MenuItem
                 title={"Bài hát yêu thích"}
                 icon={<HeartPulse size={24} />}

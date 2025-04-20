@@ -5,6 +5,7 @@ import Account from "../pages/Account";
 import NotFound from "../pages/NotFound";
 import CommingSoon from "../pages/CommingSoon";
 import HeaderOnly from "../layouts/HeaderOnly";
+import UploadSong from "../pages/UploadSong";
 
 export const routes = [
   // public route
@@ -13,6 +14,12 @@ export const routes = [
   { path: "/signin", element: Signin, layout: null, isPrivate: false },
   // private route
   { path: "/account", element: Account, layout: HeaderOnly, isPrivate: true },
+  {
+    path: "/song/upload",
+    element: UploadSong,
+    layout: HeaderOnly,
+    isPrivate: true,
+  },
   // exception route
   { path: "/*", element: NotFound, layout: null, isPrivate: false },
 ];

@@ -3,14 +3,11 @@ import axios from "axios";
 const axiosClient = axios.create({
   baseURL: "http://localhost:8000/api",
   timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -45,7 +42,6 @@ axiosClient.interceptors.response.use(
         const newAccessToken = res.data.accessToken;
         localStorage.setItem("token", newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
         return axiosClient(originalRequest);
       } catch (error) {
         localStorage.removeItem("token");
@@ -53,9 +49,6 @@ axiosClient.interceptors.response.use(
         return Promise.reject(error);
       }
     }
-
-    // ✅ LUÔN PHẢI TRẢ LỖI RA NGOÀI nếu không xử lý trong đây
-    return Promise.reject(err);
   }
 );
 

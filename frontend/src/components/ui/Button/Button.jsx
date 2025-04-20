@@ -8,6 +8,7 @@ const Button = ({
   className,
   disible,
   themes = "bg-white",
+  type,
 }) => {
   let Comp = "button";
   const props = {

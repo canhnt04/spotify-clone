@@ -26,8 +26,8 @@ const Login = () => {
 
       if (res.data) {
         setIsLoading(false);
-        localStorage.setItem("accessToken", res.data.access);
-        localStorage.setItem("refreshToken", res.data.refresh);
+        localStorage.setItem("accessToken", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
         toast.success(res.data.message);
         setTimeout(() => (window.location.href = "/"), 2000);
       }
@@ -54,7 +54,6 @@ const Login = () => {
           />
         </div>
       </MyModal>
-
       <div className="bg-zinc-950 p-10 rounded-lg w-full max-w-md text-white">
         <div class="flex flex-col items-center mb-6">
           <img src={logo} alt="Spotify" class="w-12 h-12 mb-4 rounded-full" />

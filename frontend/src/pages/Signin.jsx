@@ -5,7 +5,6 @@ import { register } from "../apis/AuthService";
 import { ToastContext } from "../contexts/ToastContext";
 import MyModal from "../components/ui/MyModal/MyModal";
 import ScaleLoader from "react-spinners/ScaleLoader";
-
 const Signin = () => {
   const { toast } = useContext(ToastContext);
   const navigate = useNavigate();
@@ -22,6 +21,7 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
 
     try {
       const res = await register({
@@ -101,6 +101,7 @@ const Signin = () => {
                 {errorMessage.username}
               </p>
             )}
+
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Email</label>
@@ -133,6 +134,7 @@ const Signin = () => {
                 {errorMessage.password}
               </p>
             )}
+
           </div>
           <button
             type="submit"
