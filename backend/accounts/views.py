@@ -156,7 +156,7 @@ class UserDetailAPIView(APIView):
 class UserSearchAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, search):
+    def get(self,request, search):
         users = User.objects.all()
         if search:
             users = users.filter(username__icontains=search) | users.filter(

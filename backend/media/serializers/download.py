@@ -32,7 +32,7 @@ class DownloadDetailSerializer(serializers.ModelSerializer):
 class DownloadCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Download
-        fields = ["user", "song"]
+        fields = ["user", "song","download_at"]
 
 
 class DownloadUpdateSerializer(serializers.ModelSerializer):
