@@ -3,6 +3,8 @@ import logo from "../assets/images/logo.jpg";
 import { useContext, useState } from "react";
 import { register } from "../apis/AuthService";
 import { ToastContext } from "../contexts/ToastContext";
+import MyModal from "../components/ui/MyModal/MyModal";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 const Signin = () => {
   const { toast } = useContext(ToastContext);
@@ -11,9 +13,15 @@ const Signin = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPass, setConfirmPass] = useState("");
+  const [errorMessage, setErrorMessage] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const res = await register({
@@ -21,18 +29,57 @@ const Signin = () => {
         email,
         password,
       });
-      if (res?.data) {
-        toast.success(res.data.message);
+
+      const resData = res?.data;
+
+      if (resData?.status === 201) {
+        toast.success(resData.message);
+        setIsLoading(false);
         setTimeout(() => navigate("/login"), 1500);
+        setErrorMessage((prev) => ({
+          ...prev,
+          username: "",
+          email: "",
+          password: "",
+        }));
       }
     } catch (error) {
-      toast.error("Đăng ký tài khoản thất bại. Vui lòng thử lại.");
-      console.log(error);
+      setIsLoading(false);
+
+      const resData = error.response?.data;
+
+      const errors = resData?.errors || {};
+
+      setErrorMessage((prev) => ({
+        ...prev,
+        username: errors.username?.[0] || "",
+        email: errors.email?.[0] || "",
+        password: errors.password?.[0] || "",
+      }));
+
+      if (!errors.username && !errors.email && !errors.password) {
+        toast.error(
+          resData?.message || "Đăng ký thất bại. Kiểm tra lại thông tin."
+        );
+      }
     }
   };
 
   return (
     <div className="bg-gradient-to-b from-zinc-900 to-black min-h-screen flex items-center justify-center">
+      <MyModal isLoading open={isLoading}>
+        <div className="flex justify-center">
+          <ScaleLoader
+            color={"#fff"}
+            loading={true}
+            height={60}
+            radius={20}
+            width={10}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div>
+      </MyModal>
       <div className="bg-zinc-950 p-10 rounded-lg w-full max-w-md text-white">
         <div class="flex flex-col items-center mb-6">
           <img src={logo} alt="Spotify" class="w-12 h-12 mb-4 rounded-full" />
@@ -49,6 +96,11 @@ const Signin = () => {
               class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
               placeholder="Tên người dùng"
             />
+            {errorMessage.username && (
+              <p className="text-xs text-red-600 font-normal my-2">
+                {errorMessage.username}
+              </p>
+            )}
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Email</label>
@@ -60,6 +112,11 @@ const Signin = () => {
               class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
               placeholder="Email"
             />
+            {errorMessage.email && (
+              <p className="text-xs text-red-600 font-normal my-2">
+                {errorMessage.email}
+              </p>
+            )}
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Mật khẩu</label>
@@ -71,19 +128,11 @@ const Signin = () => {
               class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
               placeholder="Mật khẩu"
             />
-          </div>
-          <div>
-            <label class="block text-sm font-semibold mb-1">
-              Nhập lại mật khẩu
-            </label>
-            <input
-              value={confirmPass}
-              onChange={(e) => setConfirmPass(e.target.value)}
-              required
-              type="password"
-              class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
-              placeholder="Mật khẩu"
-            />
+            {errorMessage.password && (
+              <p className="text-xs text-red-600 font-normal my-2">
+                {errorMessage.password}
+              </p>
+            )}
           </div>
           <button
             type="submit"

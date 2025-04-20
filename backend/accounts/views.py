@@ -53,7 +53,14 @@ class RegisterAPIView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+                {
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "message": "Đăng ký thất bại. Kiểm tra lại thông tin.",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class ProfileAPIView(APIView):

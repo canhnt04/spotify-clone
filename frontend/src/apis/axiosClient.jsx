@@ -27,10 +27,17 @@ axiosClient.interceptors.response.use(
   },
   async (err) => {
     const originalRequest = err.config;
-    if (err.response.status == 500 && !originalRequest._retry) {
+
+    // Xử lý lỗi 500 & refresh token
+    if (
+      err.response &&
+      err.response.status === 500 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) return Promise.reject(err);
+
       try {
         const res = await axiosClient.post(
           `/auth/refresh?refreshToken=${refreshToken}`
@@ -39,8 +46,6 @@ axiosClient.interceptors.response.use(
         localStorage.setItem("token", newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        console.log(res);
-
         return axiosClient(originalRequest);
       } catch (error) {
         localStorage.removeItem("token");
@@ -48,6 +53,9 @@ axiosClient.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+
+    // ✅ LUÔN PHẢI TRẢ LỖI RA NGOÀI nếu không xử lý trong đây
+    return Promise.reject(err);
   }
 );
 

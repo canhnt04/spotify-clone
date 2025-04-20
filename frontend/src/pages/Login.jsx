@@ -1,17 +1,23 @@
 import Button from "../components/ui/Button/Button";
 import logo from "../assets/images/logo.jpg";
 import { Link } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { login } from "../apis/AuthService";
 import { ToastContext } from "../contexts/ToastContext";
+import MyModal from "../components/ui/MyModal/MyModal";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 const Login = () => {
+  const inputRef = useRef();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useContext(ToastContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    inputRef.current?.blur();
+    setIsLoading(true);
     try {
       const res = await login({
         username,
@@ -19,19 +25,36 @@ const Login = () => {
       });
 
       if (res.data) {
+        setIsLoading(false);
         localStorage.setItem("accessToken", res.data.access);
         localStorage.setItem("refreshToken", res.data.refresh);
         toast.success(res.data.message);
         setTimeout(() => (window.location.href = "/"), 2000);
       }
     } catch (error) {
-      toast.error("Đã xãy ra lỗi.");
+      setIsLoading(false);
+      toast.error("Sai tài khoản hoặc tên đăng nhập.");
       console.log(error);
     }
   };
 
   return (
     <div className="bg-gradient-to-b from-zinc-900 to-black min-h-screen flex items-center justify-center">
+      {/* Xử lý hiệu ứng LOADING KHI submit form */}
+      <MyModal isLoading open={isLoading}>
+        <div className="flex justify-center">
+          <ScaleLoader
+            color={"#fff"}
+            loading={true}
+            height={60}
+            radius={20}
+            width={10}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div>
+      </MyModal>
+
       <div className="bg-zinc-950 p-10 rounded-lg w-full max-w-md text-white">
         <div class="flex flex-col items-center mb-6">
           <img src={logo} alt="Spotify" class="w-12 h-12 mb-4 rounded-full" />
@@ -54,6 +77,7 @@ const Login = () => {
           <div>
             <label class="block text-sm font-semibold mb-1">Mật khẩu</label>
             <input
+              ref={inputRef}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
