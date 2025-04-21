@@ -6,6 +6,7 @@ from .serializers import (
     RegisterSerializer,
     ProfileUpdateSerializer,
     GetAllUserSerializer,
+    GetUserDetailSerializer,
     BanUserSerializer,
     UnbanUserSerializer,
 )
@@ -27,15 +28,21 @@ class LoginAPIView(APIView):
 
             return Response(
                 {
-                    "status": status.HTTP_200_OK,
                     "message": "Đăng nhập thành công!",
                     "refreshToken": str(refresh),
                     "accessToken": str(refresh.access_token),
                     "userId": str(user.id),
+                    "full_name": f"{user.last_name} {user.first_name}",
                 },
                 status=status.HTTP_200_OK,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "message": "Đăng nhập thất bại!",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class RegisterAPIView(APIView):
@@ -44,23 +51,20 @@ class RegisterAPIView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
+            serializer.save()
             return Response(
                 {
-                    "status": status.HTTP_201_CREATED,
                     "message": "Đăng ký thành công!",
                 },
                 status=status.HTTP_201_CREATED,
             )
         return Response(
-                {
-                    "status": status.HTTP_400_BAD_REQUEST,
-                    "message": "Đăng ký thất bại. Kiểm tra lại thông tin.",
-                    "errors": serializer.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            {
+                "message": "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class ProfileAPIView(APIView):
@@ -70,14 +74,21 @@ class ProfileAPIView(APIView):
     def get(self, request):
         user = request.user
 
-        user_data = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "avatar": user.avatar.url if user.avatar else None,
-            "bio": user.bio,
-        }
-        return Response(user_data, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": "Lấy thông tin thành công!",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "last_name": user.last_name,
+                    "first_name": user.first_name,
+                    "fullname": f"{user.last_name} {user.first_name}",
+                    "avatar": user.avatar.url if user.avatar else None,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class ProfileUpdateAPIView(APIView):
@@ -89,9 +100,26 @@ class ProfileUpdateAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(
-                "Cập nhật thông tin cá nhân thành công!", status=status.HTTP_200_OK
+                {
+                    "message": "Cập nhật thông tin thành công!",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                        "last_name": user.last_name,
+                        "first_name": user.first_name,
+                        "avatar": user.avatar.url if user.avatar else None,
+                    },
+                },
+                status=status.HTTP_200_OK,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "message": "Cập nhật thông tin thất bại!",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class UserListAPIView(APIView):
@@ -100,7 +128,29 @@ class UserListAPIView(APIView):
     def get(self, request):
         users = User.objects.all()
         serializer = GetAllUserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": "Lấy danh sách người dùng thành công!",
+                "users": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class UserDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = GetUserDetailSerializer(user)
+        return Response(
+            {
+                "status": status.HTTP_200_OK,
+                "message": "Lấy thông tin người dùng thành công!",
+                "user": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class UserSearchAPIView(APIView):
@@ -113,7 +163,13 @@ class UserSearchAPIView(APIView):
                 email__icontains=search
             )
         serializer = GetAllUserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": "Lấy danh sách người dùng thành công!",
+                "users": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class BanUserAPIView(APIView):
@@ -123,21 +179,33 @@ class BanUserAPIView(APIView):
         user = request.user
         if not user.is_superuser:
             return Response(
-                {"error": "Chỉ quản trị viên mới có thể thực hiện hành động này."},
+                {
+                    "status": status.HTTP_404_NOT_FOUND,
+                    "messageError": "Chỉ quản trị viên mới có thể thực hiện hành động này!",
+                },
                 status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
-            target_user = User.objects.get(id=user_id)
-            target_user.is_active = False
-            target_user.save()
-            return Response(
-                {"message": "Người dùng đã bị cấm thành công."},
-                status=status.HTTP_200_OK,
-            )
+            ban_user = User.objects.get(id=user_id)
+            serializer = BanUserSerializer(ban_user, data=request.data)
+            if serializer.is_valid():
+                ban_user.is_active = False
+                ban_user.save()
+                return Response(
+                    {
+                        "status": status.HTTP_200_OK,
+                        "message": f"Tài khoản {ban_user.username} đã bị khóa!",
+                    },
+                    status=status.HTTP_200_OK,
+                )
         except User.DoesNotExist:
             return Response(
-                {"error": "Người dùng không tồn tại."}, status=status.HTTP_404_NOT_FOUND
+                {
+                    "status": status.HTTP_404_NOT_FOUND,
+                    "messageError": "Người dùng không tồn tại!",
+                },
+                status=status.HTTP_404_NOT_FOUND,
             )
 
 
@@ -148,20 +216,31 @@ class UnbanUserAPIView(APIView):
         user = request.user
         if not user.is_superuser:
             return Response(
-                {"message": "Bạn không có quyền thực hiện hành động này!"},
+                {
+                    "status": status.HTTP_404_NOT_FOUND,
+                    "messageError": "Chỉ quản trị viên mới có thể thực hiện hành động này!",
+                },
                 status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
-            user_to_ban = User.objects.get(id=user_id)
-            user_to_ban.is_active = True
-            user_to_ban.save()
-            return Response(
-                {"message": "Người dùng đã được mở khóa thành công!"},
-                status=status.HTTP_200_OK,
-            )
+            unban_user = User.objects.get(id=user_id)
+            serializer = UnbanUserSerializer(unban_user, data=request.data)
+            if serializer.is_valid():
+                unban_user.is_active = True
+                unban_user.save()
+                return Response(
+                    {
+                        "status": status.HTTP_200_OK,
+                        "message": f"Tài khoản {unban_user.username} đã được mở khóa!",
+                    },
+                    status=status.HTTP_200_OK,
+                )
         except User.DoesNotExist:
             return Response(
-                {"message": "Người dùng không tồn tại!"},
+                {
+                    "status": status.HTTP_404_NOT_FOUND,
+                    "messageError": "Người dùng không tồn tại!",
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )

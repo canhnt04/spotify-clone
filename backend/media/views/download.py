@@ -1,13 +1,15 @@
 from uuid import UUID
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from media.models import Download,Song
+from media.models import Download, Song
 from media.serializers.download import DownloadCreateSerializer, DownloadListSerializer
-from rest_framework.permissions import IsAuthenticated 
+from rest_framework.permissions import IsAuthenticated
+
+
 class DownloadCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request, song_id):
         try:
             # Kiểm tra ID hợp lệ
@@ -15,10 +17,7 @@ class DownloadCreateAPIView(APIView):
             song = Song.objects.get(id=uuid_obj)
 
             # Dữ liệu gửi vào
-            data = {
-                "user": request.user.id,
-                "song": song.id
-            }
+            data = {"user": request.user.id, "song": song.id}
             serializer = DownloadCreateSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
@@ -43,6 +42,8 @@ class DownloadCreateAPIView(APIView):
                 {"message": "ID bài hát không hợp lệ."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
 class DownloadListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -55,11 +56,13 @@ class DownloadListAPIView(APIView):
             {"message": "Danh sách bài hát đã tải xuống", "data": serializer.data},
             status=status.HTTP_200_OK,
         )
+
+
 class DownloadDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, download_id):
-        try:          
+        try:
             download = Download.objects.get(id=download_id, user=request.user)
             serializer = DownloadListSerializer(download)
             return Response(
@@ -70,9 +73,13 @@ class DownloadDetailAPIView(APIView):
             return Response(
                 {"message": "Bài hát không tồn tại hoặc id không hợp lệ"},
                 status=status.HTTP_404_NOT_FOUND,
-            )   
+            )
+
+
 class DownloadDeleteAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
+    permission_classes = [
+        IsAuthenticated
+    ]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
 
     def delete(self, request, download_id):  # download_id từ URL
         try:
@@ -86,5 +93,4 @@ class DownloadDeleteAPIView(APIView):
             return Response(
                 {"message": "Bài hát không tồn tại trong danh sách tải xuống."},
                 status=status.HTTP_404_NOT_FOUND,
-            )                 
-                   
+            )

@@ -4,8 +4,12 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from media.models import  Song
-from media.serializers.song import SongCreateSerializer,SongListSerializer,SongDetailSerializer
+from media.models import Song
+from media.serializers.song import (
+    SongCreateSerializer,
+    SongListSerializer,
+    SongDetailSerializer,
+)
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import cloudinary.uploader
 
@@ -23,7 +27,9 @@ class SongCreateAPIView(APIView):
                 audio_response = cloudinary.uploader.upload(
                     audio_file, resource_type="raw"
                 )
-                serializer.validated_data["audio_url"] = audio_response.get("secure_url")
+                serializer.validated_data["audio_url"] = audio_response.get(
+                    "secure_url"
+                )
 
             # Xử lý tải lên tệp hình ảnh
             if "thumbnail_url" in request.FILES:
@@ -31,14 +37,18 @@ class SongCreateAPIView(APIView):
                 image_response = cloudinary.uploader.upload(
                     image_file, resource_type="image"
                 )
-                serializer.validated_data["thumbnail_url"] = image_response.get("secure_url")
+                serializer.validated_data["thumbnail_url"] = image_response.get(
+                    "secure_url"
+                )
 
             if "video_url" in request.FILES:
                 video_file = request.FILES["video_url"]
                 video_response = cloudinary.uploader.upload(
                     video_file, resource_type="video"
                 )
-                serializer.validated_data["video_url"] = video_response.get("secure_url")
+                serializer.validated_data["video_url"] = video_response.get(
+                    "secure_url"
+                )
 
             # Lưu dữ liệu vào cơ sở dữ liệu
             serializer.save()
@@ -52,8 +62,10 @@ class SongCreateAPIView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SongListAPIView(APIView):
-    permission_classes = [AllowAny]    
+    permission_classes = [AllowAny]
+
     def get(self, request):
         # Retrieve all songs from the database
         songs = Song.objects.all()
@@ -61,10 +73,13 @@ class SongListAPIView(APIView):
         serializer = SongListSerializer(songs, many=True)
         return Response(
             {"message": "Danh sách bài hát", "data": serializer.data},
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )
+
+
 class SongDetailAPIView(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request, song_id):
         try:
             uuid_obj = UUID(song_id)  # ép kiểu để chắc chắn là UUID hợp lệ
@@ -79,17 +94,28 @@ class SongDetailAPIView(APIView):
                 {"message": "Bài hát không tồn tại hoặc id không hợp lệ"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
 class SongSearchSerializer(APIView):
     permission_classes = [AllowAny]
 
-    def get(self,request,search):
+    def get(self, request, search):
         song = Song.objects.all()
         if search:
-            song = song.filter(title__icontains=search) | song.filter(artist__icontains=search) | song.filter(genre__icontains=search) | song.filter(id__icontains=search)     
+            song = (
+                song.filter(title__icontains=search)
+                | song.filter(artist__icontains=search)
+                | song.filter(genre__icontains=search)
+                | song.filter(id__icontains=search)
+            )
         serializer = SongListSerializer(song, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)       
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class SongDeleteAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
+    permission_classes = [
+        IsAuthenticated
+    ]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
 
     def delete(self, request, song_id):  # song_id từ URL
         try:
@@ -105,8 +131,12 @@ class SongDeleteAPIView(APIView):
                 {"message": "Bài hát không tồn tại."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
 class SongUpdateAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
+    permission_classes = [
+        IsAuthenticated
+    ]  # Nếu bạn cần yêu cầu người dùng phải đăng nhập
 
     def put(self, request, song_id):
         try:
@@ -120,7 +150,9 @@ class SongUpdateAPIView(APIView):
                     audio_response = cloudinary.uploader.upload(
                         audio_file, resource_type="raw"
                     )
-                    serializer.validated_data["audio_url"] = audio_response.get("url")
+                    serializer.validated_data["audio_url"] = audio_response.get(
+                        "secure_url"
+                    )
 
                 # Xử lý tải lên tệp hình ảnh
                 if "thumbnail_url" in request.FILES:
@@ -128,14 +160,18 @@ class SongUpdateAPIView(APIView):
                     image_response = cloudinary.uploader.upload(
                         image_file, resource_type="image"
                     )
-                    serializer.validated_data["thumbnail_url"] = image_response.get("url")
+                    serializer.validated_data["thumbnail_url"] = image_response.get(
+                        "secure_url"
+                    )
 
                 if "video_url" in request.FILES:
                     video_file = request.FILES["video_url"]
                     video_response = cloudinary.uploader.upload(
                         video_file, resource_type="video"
                     )
-                    serializer.validated_data["video_url"] = video_response.get("url")
+                    serializer.validated_data["video_url"] = video_response.get(
+                        "secure_url"
+                    )
 
                 # Lưu dữ liệu vào cơ sở dữ liệu
                 serializer.save()
@@ -152,13 +188,16 @@ class SongUpdateAPIView(APIView):
             return Response(
                 {"message": "Bài hát không tồn tại."},
                 status=status.HTTP_404_NOT_FOUND,
-            )    
+            )
+
+
 class SongListenAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request, song_id):
         try:
             uuid_obj = UUID(song_id)
-            song = Song.objects.get(id=uuid_obj)          
+            song = Song.objects.get(id=uuid_obj)
             song.listen_count += 1
             song.save()
 
@@ -180,4 +219,4 @@ class SongListenAPIView(APIView):
             return Response(
                 {"message": "ID bài hát không hợp lệ."},
                 status=status.HTTP_400_BAD_REQUEST,
-            )                    
+            )

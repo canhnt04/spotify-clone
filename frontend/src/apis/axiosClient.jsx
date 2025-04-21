@@ -49,6 +49,9 @@ axiosClient.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+
+    // ✅ LUÔN PHẢI TRẢ LỖI RA NGOÀI nếu không xử lý trong đây
+    return Promise.reject(err);
   }
 );
 

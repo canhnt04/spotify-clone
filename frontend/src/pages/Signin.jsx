@@ -22,7 +22,6 @@ const Signin = () => {
     e.preventDefault();
     setIsLoading(true);
 
-
     try {
       const res = await register({
         username,
@@ -101,7 +100,6 @@ const Signin = () => {
                 {errorMessage.username}
               </p>
             )}
-
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Email</label>
@@ -134,7 +132,6 @@ const Signin = () => {
                 {errorMessage.password}
               </p>
             )}
-
           </div>
           <button
             type="submit"
