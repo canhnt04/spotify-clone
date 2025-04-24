@@ -117,3 +117,79 @@ class UserValidator:
                 {"password": "Mật khẩu không được giống tên đăng nhập!"}
             )
         return password
+
+
+class FileValidator:
+    def __init__(self, file=None):
+        self.file = file
+
+    def validate_avatar(self, file):
+        if not file:
+            raise serializers.ValidationError(
+                {"avatar": "Không có ảnh nào được gửi lên!"}
+            )
+
+        valid_success = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
+        if file.content_type not in valid_success:
+            raise serializers.ValidationError(
+                {
+                    "avatar": "Định dạng ảnh không hợp lệ. Chỉ chấp nhận file JPG, JPEG, PNG, WEBP."
+                }
+            )
+
+        max_size = 2 * 1024 * 1024  # 2MB
+        if file.size > max_size:
+            raise serializers.ValidationError(
+                {"avatar": "Ảnh không được vượt quá 2MB."}
+            )
+        return file
+
+    def validate_audio(self, file):
+        if not file:
+            raise serializers.ValidationError(
+                {"audio": "Không có tệp âm thanh được gửi lên!"}
+            )
+
+        valid_mime_types = ["audio/mpeg", "audio/mp3"]
+        if file.content_type not in valid_mime_types:
+            raise serializers.ValidationError(
+                {"audio": "Tệp âm thanh không hợp lệ. Chỉ chấp nhận định dạng MP3."}
+            )
+
+        max_size = 10 * 1024 * 1024  # 10MB
+        if file.size > max_size:
+            raise serializers.ValidationError(
+                {"audio": "Tệp âm thanh không được vượt quá 10MB."}
+            )
+
+        return file
+
+    def validate_video(self, file):
+        if not file:
+            raise serializers.ValidationError({"video": "Không có video được gửi lên!"})
+
+        valid_mime_types = ["video/mp4"]
+        if file.content_type not in valid_mime_types:
+            raise serializers.ValidationError(
+                {"video": "Tệp video không hợp lệ. Chỉ chấp nhận định dạng MP4."}
+            )
+
+        max_size = 500 * 1024 * 1024  # 500MB
+        if file.size > max_size:
+            raise serializers.ValidationError(
+                {"video": "Video không được vượt quá 500MB."}
+            )
+
+        return file
+
+    def validate_url(self, data, field_name, default_url):
+        url = data.get(field_name)
+
+        if not url:
+            url = default_url
+
+        if isinstance(url, str) and url.startswith("image/upload/"):
+            url = url.replace("image/upload/", "")
+            url = f"http://res.cloudinary.com/dsohleblh/{url}"
+
+        return url

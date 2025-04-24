@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from media.serializers.album import (
     AlbumListSerializer,
     AlbumDetailSerializer,
+    AlbumUserSerializer,
     AlbumCreateSerializer,
     AlbumUpdateSerializer,
     AlbumAddSongSerializer,
@@ -62,11 +63,33 @@ class AlbumDetailAPIView(APIView):
             )
 
 
+class AlbumUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        albums = Album.objects.filter(creator=request.user)
+        if albums.exists:
+            serializer = AlbumUserSerializer(albums, many=True)
+            return Response(
+                {
+                    "message": "Lấy danh sách album của người dùng thành công!",
+                    "albums": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "Không tìm thấy album của người dùng!"},
+                status=status.HTTP_200_OK,
+            )
+
+
 class AlbumCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = AlbumCreateSerializer(data=request.data)
+
         if serializer.is_valid():
             if "thumbnail_url" in request.FILES:
                 thumbnail_file = request.FILES["thumbnail_url"]
@@ -186,7 +209,7 @@ class AlbumAddSongAPIView(APIView):
 
     def post(self, request, album_id, song_id):
         try:
-            album = Album.objects.get(id=album_id)
+            album = Album.objects.get(creator=request.user, id=album_id)
         except Album.DoesNotExist:
             return Response(
                 {

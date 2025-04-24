@@ -1,16 +1,10 @@
+from typing import OrderedDict
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from .validators import UserValidator
 
 User = get_user_model()
-
-
-class UserFavoriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username"]
-        read_only_fields = ["id"]
 
 
 class LoginSerializer(serializers.Serializer):
@@ -73,6 +67,26 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "email", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("username", data.get("username", "")),
+                ("email", data.get("email", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -100,7 +114,20 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 class GetAllUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "last_name", "first_name", "avatar"]
+        fields = ["id", "username", "email", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("username", data.get("username", "")),
+                ("email", data.get("email", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
 
 
 class GetUserDetailSerializer(serializers.ModelSerializer):
@@ -129,3 +156,16 @@ class UnbanUserSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get("is_active", False)
         instance.save()
         return instance
+
+
+class UserFavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]
+        read_only_fields = ["id"]
+
+
+class UserAlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]
