@@ -6,6 +6,7 @@ body {
   background-color: #121212; /* Màu nền tối của Spotify */
   color: #ffffff; /* Màu chữ trắng */
   line-height: 1.5;
+  user-select: none;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -36,4 +37,8 @@ body {
 .custom-scrollbar::-webkit-scrollbar-button {
   display: none;
   height: 0;
+}
+
+button {
+  cursor: pointer;
 }

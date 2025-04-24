@@ -61,11 +61,12 @@ const Header = () => {
 
               <Tippy
                 interactive
+                appendTo={() => document.body}
                 visible={visible}
                 onClickOutside={() => setVisible(false)}
                 offset={[-100, 12]}
                 render={(attrs) => (
-                  <Dropdown tabIndex="-1" {...attrs}>
+                  <Dropdown>
                     <MenuItem
                       header
                       to={"/account"}

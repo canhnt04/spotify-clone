@@ -20,7 +20,6 @@ const Sidebar = () => {
         <Tippy
           visible={visible}
           offset={[80, 10]}
-          content="Hello"
           interactive
           onClickOutside={() => setVisible(false)}
           render={(attrs) => (
@@ -30,11 +29,6 @@ const Sidebar = () => {
                 to={"/song/upload"}
                 title={"Upload bài hát/video"}
                 icon={<Upload size={24} />}
-                onClick={() => (
-                  <MyModal open={true}>
-                    <h1>Hello</h1>
-                  </MyModal>
-                )}
               />
               <MenuItem
                 title={"Bài hát yêu thích"}
@@ -59,8 +53,6 @@ const Sidebar = () => {
       {isLogin ? (
         <>
           <div className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-            <Song />
-            <Song />
             <Song />
             <Song />
             <Song />

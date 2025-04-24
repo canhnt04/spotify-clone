@@ -55,6 +55,12 @@ class RegisterAPIView(APIView):
             return Response(
                 {
                     "message": "Đăng ký thành công!",
+                    "user": {
+                        "username": serializer.data["username"],
+                        "email": serializer.data["email"],
+                        "last_name": serializer.data["last_name"],
+                        "first_name": serializer.data["first_name"],
+                    },
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -156,7 +162,7 @@ class UserDetailAPIView(APIView):
 class UserSearchAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self,request, search):
+    def get(self, request, search):
         users = User.objects.all()
         if search:
             users = users.filter(username__icontains=search) | users.filter(

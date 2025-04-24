@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useContext, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import defaultAvatar from "../assets/images/default_avatar.jpg";
 import { CopyIcon, Ellipsis, MessageCircle, Pencil } from "lucide-react";
+
+import { StoreContext } from "../contexts/StoreProvider";
 
 // Import Swiper styles
 import Card from "../components/ui/Card/Card";
@@ -88,6 +90,8 @@ const Account = () => {
     },
   ];
 
+  const { userInfo } = useContext(StoreContext);
+
   const [visible, setVisible] = useState(false);
   return (
     <div className="w-full px-10 mt-10">
@@ -95,13 +99,15 @@ const Account = () => {
       <div className="header-accout_page flex items-center gap-10">
         <div className="image w-[232px] h-[232px] flex items-center justify-center rounded-full overflow-hidden">
           <img
-            src={defaultAvatar}
+            src={userInfo?.avatar ? userInfo.avatar : defaultAvatar}
             alt="avatar"
             className="w-full h-full object-center rounded-full"
           />
         </div>
         <div className="infomation flex flex-col gap-4">
-          <h1 className="name-Accout text-9xl font-extrabold">Ronaldo</h1>
+          <h1 className="name-Accout text-9xl font-extrabold">
+            {userInfo?.fullname}
+          </h1>
           <span className="mx-2 text-sm font-bold hover:underline cursor-pointer">
             1 album
           </span>

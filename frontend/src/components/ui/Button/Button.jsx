@@ -24,7 +24,7 @@ const Button = ({
   return (
     <Comp
       {...props}
-      className={`${themes} text-black px-4 py-2 text-sm rounded-full font-bold hover:bg-gray-200 hover:scale-101 transition duration-300 ease-in-out cursor-pointer ${className}  ${
+      className={`${themes} text-black text-center px-4 py-2 text-sm rounded-full font-bold hover:bg-gray-200 hover:scale-101 transition duration-300 ease-in-out cursor-pointer ${className}  ${
         disible ? "hidden" : ""
       }`}
     >

@@ -1,18 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.jpg";
 import { useContext, useState } from "react";
-import { register } from "../apis/AuthService";
+import { register } from "../apis/authService";
 import { ToastContext } from "../contexts/ToastContext";
-import MyModal from "../components/ui/MyModal/MyModal";
-import ScaleLoader from "react-spinners/ScaleLoader";
+import Loading from "../components/ui/Loading/Loading";
 const Signin = () => {
   const { toast } = useContext(ToastContext);
   const navigate = useNavigate();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState({
+    first_name: "",
+    last_name: "",
     username: "",
     email: "",
     password: "",
@@ -24,6 +27,8 @@ const Signin = () => {
 
     try {
       const res = await register({
+        first_name: firstName,
+        last_name: lastName,
         username,
         email,
         password,
@@ -31,12 +36,14 @@ const Signin = () => {
 
       const resData = res?.data;
 
-      if (resData?.status === 201) {
+      if (resData && res.status == 201) {
         toast.success(resData.message);
         setIsLoading(false);
         setTimeout(() => navigate("/login"), 1500);
         setErrorMessage((prev) => ({
           ...prev,
+          first_name: "",
+          last_name: "",
           username: "",
           email: "",
           password: "",
@@ -66,25 +73,38 @@ const Signin = () => {
 
   return (
     <div className="bg-gradient-to-b from-zinc-900 to-black min-h-screen flex items-center justify-center">
-      <MyModal isLoading open={isLoading}>
-        <div className="flex justify-center">
-          <ScaleLoader
-            color={"#fff"}
-            loading={true}
-            height={60}
-            radius={20}
-            width={10}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
-        </div>
-      </MyModal>
+      {/* Xử lý hiệu ứng loading khi gửi dữ liệu */}
+      <Loading isOpen={isLoading} />
       <div className="bg-zinc-950 p-10 rounded-lg w-full max-w-md text-white">
         <div class="flex flex-col items-center mb-6">
           <img src={logo} alt="Spotify" class="w-12 h-12 mb-4 rounded-full" />
           <h2 class="text-2xl font-bold">Đăng ký tài khoản Spotify</h2>
         </div>
         <form class="space-y-4" onSubmit={handleSubmit}>
+          <div className="flex items-center gap-4">
+            <div>
+              <label class="block text-sm font-semibold mb-1">Họ</label>
+              <input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                type="text"
+                class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
+                placeholder="Họ"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-1">Tên</label>
+              <input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                type="text"
+                class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
+                placeholder="Tên"
+              />
+            </div>
+          </div>
           <div>
             <label class="block text-sm font-semibold mb-1">Username</label>
             <input

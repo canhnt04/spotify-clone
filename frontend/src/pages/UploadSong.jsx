@@ -1,14 +1,18 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { upload } from "../apis/songService";
 import { ToastContext } from "../contexts/ToastContext";
 import Button from "../components/ui/Button/Button";
 import { ImageUpIcon, X } from "lucide-react";
-import MyModal from "../components/ui/MyModal/MyModal";
-import ScaleLoader from "react-spinners/ScaleLoader";
+import { StoreContext } from "../contexts/StoreProvider";
+import { useNavigate } from "react-router-dom";
+import Loading from "../components/ui/Loading/Loading";
 
 const UploadSongForm = () => {
+  const navigate = useNavigate();
   const { toast } = useContext(ToastContext);
   const [isLoading, setIsLoading] = useState(false);
+  const { userInfo } = useContext(StoreContext);
+
   const [formData, setFormData] = useState({
     title: "",
     artist: "",
@@ -87,6 +91,7 @@ const UploadSongForm = () => {
         thumbnailInputRef.current.value = null;
         audioInputRef.current.value = null;
 
+        navigate("/");
         setIsLoading(false);
       }
     } catch (error) {
@@ -96,25 +101,19 @@ const UploadSongForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (userInfo?.fullname) {
+      setFormData((prev) => ({ ...prev, artist: userInfo.fullname }));
+    }
+  }, [userInfo]);
+
   return (
     <form
       className="max-w-4xl w-full mx-auto p-6 border border-dashed shadow-xl rounded-2xl space-y-8"
       onSubmit={handleSubmit}
     >
       {/* Xử lý hiệu ứng LOADING KHI submit form */}
-      <MyModal isLoading open={isLoading}>
-        <div className="flex justify-center">
-          <ScaleLoader
-            color={"#fff"}
-            loading={true}
-            height={60}
-            radius={20}
-            width={10}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
-        </div>
-      </MyModal>
+      <Loading isOpen={isLoading} />
       {/* Upload Image */}
       <div className="w-full">
         <label
@@ -205,20 +204,6 @@ const UploadSongForm = () => {
           />
         </div>
         <div>
-          <label className="block font-semibold mb-2">Nghệ sĩ</label>
-          <input
-            type="text"
-            name="artist"
-            value={formData.artist}
-            onChange={(e) =>
-              setFormData({ ...formData, artist: e.target.value })
-            }
-            required
-            placeholder="Nhập tên nghệ sĩ"
-            className="w-full border border-gray-300 rounded-xl px-4 py-3"
-          />
-        </div>
-        <div className="lg:col-span-2">
           <label className="block font-semibold mb-2">Thể loại</label>
           <input
             type="text"

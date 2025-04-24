@@ -5,7 +5,7 @@ const getSongs = async () => {
 };
 
 const upload = async (body) => {
-  return await axiosClient.post("/song/upload/", body);
+  return await axiosClient.post("/song/create/", body);
 };
 
 export { upload, getSongs };

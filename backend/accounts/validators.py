@@ -75,6 +75,42 @@ class UserValidator:
             )
         return password
 
+    def validate_lastname(self, last_name):
+        if not last_name:
+            raise serializers.ValidationError({"last_name": "Họ không được để trống!"})
+        if len(last_name) < 2:
+            raise serializers.ValidationError(
+                {"last_name": "Họ phải có ít nhất 2 ký tự!"}
+            )
+        if len(last_name) > 30:
+            raise serializers.ValidationError(
+                {"last_name": "Họ không được quá 30 ký tự!"}
+            )
+        if not last_name.isalpha():
+            raise serializers.ValidationError(
+                {"last_name": "Họ chỉ được chứa ký tự chữ!"}
+            )
+        return last_name
+
+    def validate_firstname(self, first_name):
+        if not first_name:
+            raise serializers.ValidationError(
+                {"first_name": "Tên không được để trống!"}
+            )
+        if len(first_name) < 2:
+            raise serializers.ValidationError(
+                {"first_name": "Tên phải có ít nhất 2 ký tự!"}
+            )
+        if len(first_name) > 30:
+            raise serializers.ValidationError(
+                {"first_name": "Tên không được quá 30 ký tự!"}
+            )
+        if not first_name.isalpha():
+            raise serializers.ValidationError(
+                {"first_name": "Tên chỉ được chứa ký tự chữ!"}
+            )
+        return first_name
+
     def validate_username_equal_password(self, username, password):
         if username == password:
             raise serializers.ValidationError(

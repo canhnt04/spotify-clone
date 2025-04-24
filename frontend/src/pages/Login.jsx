@@ -2,10 +2,10 @@ import Button from "../components/ui/Button/Button";
 import logo from "../assets/images/logo.jpg";
 import { Link } from "react-router-dom";
 import { useContext, useRef, useState } from "react";
-import { login } from "../apis/AuthService";
 import { ToastContext } from "../contexts/ToastContext";
 import MyModal from "../components/ui/MyModal/MyModal";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import { login } from "../apis/authService";
 
 const Login = () => {
   const inputRef = useRef();
@@ -28,6 +28,7 @@ const Login = () => {
         setIsLoading(false);
         localStorage.setItem("accessToken", res.data.accessToken);
         localStorage.setItem("refreshToken", res.data.refreshToken);
+        localStorage.setItem("userId", res.data.userId);
         toast.success(res.data.message);
         setTimeout(() => (window.location.href = "/"), 2000);
       }
