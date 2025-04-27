@@ -20,6 +20,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
     window.location.reload();
   };
   const isLogin = localStorage.getItem("accessToken") ? true : false;

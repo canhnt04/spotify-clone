@@ -10,7 +10,7 @@ const style = {
   maxWidth: 800,
   maxHeight: "80vh",
   borderRadius: 8,
-  boxShadow: 24,
+  // boxShadow: 24,
   p: 2,
   overflow: "hidden",
   outline: "none",

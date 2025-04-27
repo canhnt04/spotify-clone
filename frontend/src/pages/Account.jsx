@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import defaultAvatar from "../assets/images/default_avatar.jpg";
-import { CopyIcon, Ellipsis, MessageCircle, Pencil } from "lucide-react";
+import { CopyIcon, Edit, Ellipsis, MessageCircle, Pencil } from "lucide-react";
 
 import { StoreContext } from "../contexts/StoreProvider";
 
@@ -11,88 +11,31 @@ import Swipper from "../components/ui/Swipper/Swipper";
 import Button from "../components/ui/Button/Button";
 import Dropdown from "../components/ui/Dropdown/Dropdown";
 import MenuItem from "../components/ui/Dropdown/MenuItem";
+import { getSongs } from "../apis/songService";
+import MyModal from "../components/ui/MyModal/MyModal";
+import UpdateProfileForm from "../components/form/UpdateProfileForm";
 const Account = () => {
-  const songs = [
-    {
-      id: 1,
-      name: "Nước mắt cá sấu",
-      artistName: "HIEUTHUHAI",
-      image: "https://i.scdn.co/image/ab67616d00001e024594668d4629f899daba689a",
-    },
-    {
-      id: 2,
-      name: "Ôm em thật lâu",
-      artistName: "MONO",
-      image: "https://i.scdn.co/image/ab67616d00001e024a7655026a9e80a95afba515",
-    },
-    {
-      id: 3,
-      name: "Lễ đường",
-      artistName: "Kai Đinh",
-      image: "https://i.scdn.co/image/ab67616d00001e0210ccec5b14a7b1b5c552d5cc",
-    },
-    {
-      id: 4,
-      name: "Phép màu - Đàn cá",
-      artistName: "MAYDAYs, Minh Tốc & Lam",
-      image: "https://i.scdn.co/image/ab67616d00001e02c51258e41841d5b0365054e7",
-    },
-
-    {
-      id: 5,
-      name: "Azizam",
-      artistName: "Ed Sheeran",
-      image: "https://i.scdn.co/image/ab67616d00001e025aac795808fc6b6d229c363b",
-    },
-    {
-      id: 6,
-      name: "Đến đây bên anh",
-      artistName: "Cloud 5, Dangrangto",
-      image: "https://i.scdn.co/image/ab67616d00001e02c7d258d4ce12b05006b28f64",
-    },
-    {
-      id: 4,
-      name: "Phép màu - Đàn cá",
-      artistName: "MAYDAYs, Minh Tốc & Lam",
-      image: "https://i.scdn.co/image/ab67616d00001e02c51258e41841d5b0365054e7",
-    },
-
-    {
-      id: 5,
-      name: "Azizam",
-      artistName: "Ed Sheeran",
-      image: "https://i.scdn.co/image/ab67616d00001e025aac795808fc6b6d229c363b",
-    },
-    {
-      id: 6,
-      name: "Đến đây bên anh",
-      artistName: "Cloud 5, Dangrangto",
-      image: "https://i.scdn.co/image/ab67616d00001e02c7d258d4ce12b05006b28f64",
-    },
-    {
-      id: 4,
-      name: "Phép màu - Đàn cá",
-      artistName: "MAYDAYs, Minh Tốc & Lam",
-      image: "https://i.scdn.co/image/ab67616d00001e02c51258e41841d5b0365054e7",
-    },
-
-    {
-      id: 5,
-      name: "Azizam",
-      artistName: "Ed Sheeran",
-      image: "https://i.scdn.co/image/ab67616d00001e025aac795808fc6b6d229c363b",
-    },
-    {
-      id: 6,
-      name: "Đến đây bên anh",
-      artistName: "Cloud 5, Dangrangto",
-      image: "https://i.scdn.co/image/ab67616d00001e02c7d258d4ce12b05006b28f64",
-    },
-  ];
+  const [songs, setSongs] = useState([]);
 
   const { userInfo } = useContext(StoreContext);
 
   const [visible, setVisible] = useState(false);
+  const [visibleModal, setVisibleModal] = useState(false);
+
+  useEffect(() => {
+    const getListSongs = async () => {
+      try {
+        const res = await getSongs();
+        if (res?.data && res?.data.data) {
+          setSongs(res.data.data);
+          console.log("Danh sách bài hát :", res.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getListSongs();
+  }, []);
   return (
     <div className="w-full px-10 mt-10">
       {/* HEADER */}
@@ -127,7 +70,10 @@ const Account = () => {
             render={(attrs) => (
               <Dropdown tabIndex="-1" {...attrs}>
                 <MenuItem
-                  to={"/"}
+                  onClick={() => {
+                    setVisibleModal(true);
+                    setVisible(false);
+                  }}
                   title={"Chỉnh sửa hồ sơ"}
                   icon={<Pencil size={18} />}
                 />
@@ -148,17 +94,28 @@ const Account = () => {
           </Tippy>
         </div>
         {/* <List data={songs} title={"Albums của bạn"} /> */}
-        <Swipper data={songs} itemPerPage={6} showNavigation={true}>
-          {(item) => (
-            <Card
-              id={item.id}
-              image={item.image}
-              name={item.name}
-              artistName={item.artistName}
-            />
-          )}
+        <Swipper
+          data={songs}
+          itemPerPage={6}
+          showNavigation={true}
+          title={"Được đề xuất cho hôm nay"}
+        >
+          {(item) => <Card data={item} />}
         </Swipper>
       </div>
+      {/* Modal */}
+      <MyModal
+        open={visibleModal}
+        setOpen={setVisibleModal}
+        onClose={() => setVisibleModal(false)}
+        isLoading
+      >
+        <UpdateProfileForm
+          defaultAvatar={defaultAvatar}
+          data={userInfo}
+          setVisibleModal={setVisibleModal}
+        />
+      </MyModal>
     </div>
   );
 };

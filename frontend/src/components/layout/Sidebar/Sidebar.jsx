@@ -6,8 +6,10 @@ import Dropdown from "../../ui/Dropdown/Dropdown";
 import MenuItem from "../../ui/Dropdown/MenuItem";
 import MyModal from "../../ui/MyModal/MyModal";
 import { useEffect, useState } from "react";
+
 const Sidebar = () => {
   const [visible, setVisible] = useState(false);
+  const [visibleModal, setVisibleModal] = useState(false);
   const isLogin = localStorage.getItem("accessToken") ? true : false;
   useEffect(() => {
     console.log("visible", visible);

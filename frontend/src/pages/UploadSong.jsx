@@ -29,8 +29,6 @@ const UploadSongForm = () => {
   const [audioURL, setAudioURL] = useState(null);
   const [imageURL, setImageURL] = useState(null);
 
-  const audioRef = useRef(null);
-
   const handleAudioChange = (e) => {
     const file = e.target.files[0];
     if (file) {

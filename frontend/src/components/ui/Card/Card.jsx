@@ -1,13 +1,16 @@
 import { Eye, Play } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
 import avatarDefault from "../../../assets/images/default_avatar.jpg";
 import MyModal from "../MyModal/MyModal";
 import Button from "../Button/Button";
+import useLocalStorage from "../../hooks/useLocalStorage";
+import useGetRecentSong from "../../hooks/useGetRecentSong";
 
 const Card = ({ artistType, data }) => {
   const { userInfo, setCurrentSong } = useContext(StoreContext);
   const [visible, setVisible] = useState(false);
+  const [songPlayed, setSongPlayed] = useLocalStorage("recentSong", {});
   const { id, avatar, title, last_name, first_name, artist, thumbnail_url } =
     data || {};
 
@@ -17,7 +20,11 @@ const Card = ({ artistType, data }) => {
       return;
     }
     setCurrentSong(data);
+    setSongPlayed(data);
   };
+  useEffect(() => {
+    if (songPlayed) setCurrentSong(songPlayed);
+  }, []);
   return (
     <div
       key={id}
