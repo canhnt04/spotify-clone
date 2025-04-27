@@ -1,4 +1,5 @@
 import cloudinary.uploader
+from accounts.validators import FileValidator
 from media.models import Album
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -24,10 +25,17 @@ class AlbumListAPIView(APIView):
         albums = Album.objects.all()
         if albums.exists():
             serializer = AlbumListSerializer(albums, many=True)
+            album_data_list = serializer.data
+            validator = FileValidator()
+            for album_data in album_data_list:
+                thumbnail = validator.validate_url(
+                    data=album_data, field_name="thumbnail_url", default_url="null"
+                )
+                album_data["thumbnail_url"] = thumbnail
             return Response(
                 {
                     "message": "Lấy danh sách album thành công!",
-                    "album": serializer.data,
+                    "album": album_data_list,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -47,10 +55,16 @@ class AlbumDetailAPIView(APIView):
         try:
             album = Album.objects.get(id=album_id)
             serializer = AlbumDetailSerializer(album)
+            album_data = serializer.data
+            validator = FileValidator()
+            thumbnail = validator.validate_url(
+                data=album_data, field_name="thumbnail_url", default_url="null"
+            )
+            album_data["thumbnail_url"] = thumbnail
             return Response(
                 {
                     "message": "Lấy thông tin album thành công!",
-                    "album": serializer.data,
+                    "album": album_data,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -70,10 +84,18 @@ class AlbumUserAPIView(APIView):
         albums = Album.objects.filter(creator=request.user)
         if albums.exists:
             serializer = AlbumUserSerializer(albums, many=True)
+            album_data_list = serializer.data
+            validator = FileValidator()
+            for album_data in album_data_list:
+                thumbnail = validator.validate_url(
+                    data=album_data, field_name="thumbnail_url", default_url="null"
+                )
+                album_data["thumbnail_url"] = thumbnail
+
             return Response(
                 {
                     "message": "Lấy danh sách album của người dùng thành công!",
-                    "albums": serializer.data,
+                    "albums": album_data_list,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -100,6 +122,7 @@ class AlbumCreateAPIView(APIView):
                     "url"
                 )
             album = serializer.save(creator=request.user)
+
             return Response(
                 {
                     "message": "Tạo album thành công!",
@@ -107,6 +130,7 @@ class AlbumCreateAPIView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+
         return Response(
             {
                 "message": "Tạo album không thành công!",

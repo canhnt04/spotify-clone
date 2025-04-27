@@ -9,6 +9,11 @@ class Song(models.Model):
     title = models.CharField(max_length=200)
     artist = models.CharField(max_length=255)
     genre = models.CharField(max_length=100)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="songs",
+    )
     thumbnail_url = CloudinaryField("image", blank=True, null=True)
     audio_url = CloudinaryField("raw", blank=True, null=True)
     video_url = CloudinaryField("video", blank=True, null=True)
@@ -28,7 +33,9 @@ class Album(models.Model):
     songs = models.ManyToManyField(Song, blank=True, related_name="albums")
     thumbnail_url = CloudinaryField("image", blank=True, null=True)
     creator = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="albums"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="albums",
     )
     created_at = models.DateField(auto_now_add=True)
 
@@ -39,10 +46,14 @@ class Album(models.Model):
 class Favorite(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="favorites",
     )
     song = models.ForeignKey(
-        "Song", on_delete=models.CASCADE, related_name="favorited_by"
+        "Song",
+        on_delete=models.CASCADE,
+        related_name="favorited_by",
     )
     added_at = models.DateTimeField(auto_now_add=True)
 
@@ -56,7 +67,9 @@ class Favorite(models.Model):
 class Download(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="downloads"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="downloads",
     )
     song = models.ForeignKey(
         "Song",

@@ -123,7 +123,7 @@ class FileValidator:
     def __init__(self, file=None):
         self.file = file
 
-    def validate_avatar(self, file):
+    def validate_image(self, file):
         if not file:
             raise serializers.ValidationError(
                 {"avatar": "Không có ảnh nào được gửi lên!"}
@@ -188,8 +188,8 @@ class FileValidator:
         if not url:
             url = default_url
 
-        if isinstance(url, str) and url.startswith("image/upload/"):
-            url = url.replace("image/upload/", "")
-            url = f"http://res.cloudinary.com/dsohleblh/{url}"
-
-        return url
+        if isinstance(url, str):
+            if url.startswith("image/upload/"):
+                url = url.replace("image/upload/", "")
+                return url
+        return default_url

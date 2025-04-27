@@ -85,16 +85,12 @@ class ProfileAPIView(APIView):
         user = request.user
         serializer = ProfileSerializer(user)
         user_data = serializer.data
-
         validator = FileValidator()
-
         avatar_url = validator.validate_url(
-            data=user_data,
-            field_name="avatar",
-            default_url="http://res.cloudinary.com/dsohleblh/image/upload/v1745330511/l1f05vvw6emmbewkecw1.png",
+            data=user_data, field_name="avatar", default_url="null"
         )
-
         user_data["avatar"] = avatar_url
+
         return Response(
             {"message": "Lấy thông tin thành công!", "user": user_data},
             status=status.HTTP_200_OK,
@@ -114,7 +110,7 @@ class ProfileUpdateAPIView(APIView):
 
             if "avatar" in request.FILES:
                 avatar_file = request.FILES["avatar"]
-                validator.validate_avatar(avatar_file)
+                validator.validate_image(avatar_file)
 
                 avatar_res = cloudinary.uploader.upload(
                     avatar_file, resource_type="image"
