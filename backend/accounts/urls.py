@@ -8,6 +8,8 @@ from .views import (
     UserListAPIView,
     UserDetailAPIView,
     UserSearchAPIView,
+    ProfileAllAPIView,
+    ProfileOtherAPIView,
     BanUserAPIView,
     UnbanUserAPIView,
 )
@@ -17,6 +19,8 @@ urlpatterns = [
     path("register/", RegisterAPIView.as_view()),
     path("login/", LoginAPIView.as_view()),
     path("profile/", ProfileAPIView.as_view()),
+    path("profile/all/", ProfileAllAPIView.as_view()),
+    path("profile/other/<str:user_id>/", ProfileOtherAPIView.as_view()),
     path("profile/update/", ProfileUpdateAPIView.as_view()),
     path("user-list/", UserListAPIView.as_view()),
     path("user-detail/", UserDetailAPIView.as_view()),

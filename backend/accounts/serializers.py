@@ -70,7 +70,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "avatar"]
+        fields = ["id", "username", "email", "avatar"]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -79,8 +79,47 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         return OrderedDict(
             [
+                ("id", data.get("id", "")),
                 ("username", data.get("username", "")),
                 ("email", data.get("email", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
+class ProfileAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
+class ProfileOtherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
                 ("full_name", data.get("full_name", "")),
                 ("avatar", data.get("avatar")),
             ]
@@ -90,7 +129,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["last_name", "first_name", "avatar"]
+        fields = ["id", "last_name", "first_name", "avatar"]
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():

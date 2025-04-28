@@ -10,6 +10,8 @@ from .serializers import (
     ProfileUpdateSerializer,
     GetAllUserSerializer,
     GetUserDetailSerializer,
+    ProfileAllSerializer,
+    ProfileOtherSerializer,
     BanUserSerializer,
     UnbanUserSerializer,
 )
@@ -173,6 +175,62 @@ class UserDetailAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class ProfileAllAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        users = User.objects.all()
+        serializer = ProfileAllSerializer(users, many=True)
+        user_data_list = serializer.data
+        validator = FileValidator()
+        for user_data in user_data_list:
+            avatar_url = validator.validate_url(
+                data=user_data,
+                field_name="avatar",
+                default_url="null",
+            )
+            user_data["avatar"] = avatar_url
+
+        return Response(
+            {
+                "message": "Lấy thông tin thành công!",
+                "users": user_data_list,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ProfileOtherAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        try:
+            user = request.user
+            serializer = ProfileOtherSerializer(user)
+            user_data = serializer.data
+            validator = FileValidator()
+            avatar_url = validator.validate_url(
+                data=user_data, field_name="avatar", default_url="null"
+            )
+            user_data["avatar"] = avatar_url
+
+            return Response(
+                {
+                    "message": "Lấy thông tin người dùng thành công!",
+                    "user": user_data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        except User.DoesNotExist:
+            return Response(
+                {
+                    "messageError": "Người dùng không tồn tại!",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class UserSearchAPIView(APIView):
