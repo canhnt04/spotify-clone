@@ -181,7 +181,6 @@ class ProfileAllAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
         users = User.objects.all()
         serializer = ProfileAllSerializer(users, many=True)
         user_data_list = serializer.data
@@ -208,7 +207,7 @@ class ProfileOtherAPIView(APIView):
 
     def get(self, request, user_id):
         try:
-            user = request.user
+            user = User.objects.get(id=user_id)
             serializer = ProfileOtherSerializer(user)
             user_data = serializer.data
             validator = FileValidator()
