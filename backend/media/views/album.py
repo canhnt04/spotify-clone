@@ -29,7 +29,7 @@ class AlbumListAPIView(APIView):
             validator = FileValidator()
             for album_data in album_data_list:
                 thumbnail = validator.validate_url(
-                    data=album_data, field_name="thumbnail_url", default_url="null"
+                    data=album_data, field_name="thumbnail_url", default_url=None
                 )
                 album_data["thumbnail_url"] = thumbnail
             return Response(
@@ -58,7 +58,7 @@ class AlbumDetailAPIView(APIView):
             album_data = serializer.data
             validator = FileValidator()
             thumbnail = validator.validate_url(
-                data=album_data, field_name="thumbnail_url", default_url="null"
+                data=album_data, field_name="thumbnail_url", default_url=None
             )
             album_data["thumbnail_url"] = thumbnail
             return Response(
@@ -88,7 +88,7 @@ class AlbumUserAPIView(APIView):
             validator = FileValidator()
             for album_data in album_data_list:
                 thumbnail = validator.validate_url(
-                    data=album_data, field_name="thumbnail_url", default_url="null"
+                    data=album_data, field_name="thumbnail_url", default_url=None
                 )
                 album_data["thumbnail_url"] = thumbnail
 
