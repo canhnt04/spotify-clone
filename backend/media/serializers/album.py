@@ -1,11 +1,20 @@
 from rest_framework import serializers
 from media.models import Album, Song
+from accounts.serializers import UserAlbumSerializer
 
 
 class AlbumListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = "__all__"
+
+
+class AlbumUserSerializer(serializers.ModelSerializer):
+    user = UserAlbumSerializer(read_only=True)
+
+    class Meta:
+        model = Album
+        fields = ["user", "id", "name", "description", "thumbnail_url"]
 
 
 class AlbumDetailSerializer(serializers.ModelSerializer):
@@ -26,6 +35,16 @@ class AlbumUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ["name", "description", "thumbnail_url"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        thumbnail = data.get("thumbnail_url")
+        if thumbnail:
+            if thumbnail.startswith("image/upload/"):
+                thumbnail = thumbnail.replace("image/upload/", "")
+            thumbnail = f"http://res.cloudinary.com/dsohleblh/{thumbnail}"
+        return data
 
 
 class AlbumAddSongSerializer(serializers.Serializer):

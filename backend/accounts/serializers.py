@@ -1,16 +1,10 @@
+from typing import OrderedDict
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from .validators import UserValidator
 
 User = get_user_model()
-
-
-class UserFavoriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username"]
-        read_only_fields = ["id"]
 
 
 class LoginSerializer(serializers.Serializer):
@@ -73,26 +67,73 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("username", data.get("username", "")),
+                ("email", data.get("email", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
+class ProfileAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
+class ProfileOtherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["last_name", "first_name", "password", "avatar"]
-
-    def validate(self, attrs):
-        validator = UserValidator(instance=self.instance)
-        if "password" in attrs:
-            validator.validate_password(attrs["password"])
-        return attrs
+        fields = ["id", "last_name", "first_name", "avatar"]
 
     def update(self, instance, validated_data):
-        validated_data.pop("id", None)
-        validated_data.pop("username", None)
-        validated_data.pop("email", None)
-        password = validated_data.pop("password", None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        if password:
-            instance.set_password(password)
         instance.save()
         return instance
 
@@ -100,7 +141,20 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 class GetAllUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "last_name", "first_name", "avatar"]
+        fields = ["id", "username", "email", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("username", data.get("username", "")),
+                ("email", data.get("email", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
 
 
 class GetUserDetailSerializer(serializers.ModelSerializer):
@@ -129,3 +183,16 @@ class UnbanUserSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get("is_active", False)
         instance.save()
         return instance
+
+
+class UserFavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]
+        read_only_fields = ["id"]
+
+
+class UserAlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]

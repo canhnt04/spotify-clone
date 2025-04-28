@@ -1,4 +1,5 @@
 import cloudinary.uploader
+from accounts.validators import FileValidator
 from media.models import Album
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from media.serializers.album import (
     AlbumListSerializer,
     AlbumDetailSerializer,
+    AlbumUserSerializer,
     AlbumCreateSerializer,
     AlbumUpdateSerializer,
     AlbumAddSongSerializer,
@@ -23,10 +25,17 @@ class AlbumListAPIView(APIView):
         albums = Album.objects.all()
         if albums.exists():
             serializer = AlbumListSerializer(albums, many=True)
+            album_data_list = serializer.data
+            validator = FileValidator()
+            for album_data in album_data_list:
+                thumbnail = validator.validate_url(
+                    data=album_data, field_name="thumbnail_url", default_url="null"
+                )
+                album_data["thumbnail_url"] = thumbnail
             return Response(
                 {
                     "message": "Lấy danh sách album thành công!",
-                    "album": serializer.data,
+                    "album": album_data_list,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -46,10 +55,16 @@ class AlbumDetailAPIView(APIView):
         try:
             album = Album.objects.get(id=album_id)
             serializer = AlbumDetailSerializer(album)
+            album_data = serializer.data
+            validator = FileValidator()
+            thumbnail = validator.validate_url(
+                data=album_data, field_name="thumbnail_url", default_url="null"
+            )
+            album_data["thumbnail_url"] = thumbnail
             return Response(
                 {
                     "message": "Lấy thông tin album thành công!",
-                    "album": serializer.data,
+                    "album": album_data,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -62,11 +77,41 @@ class AlbumDetailAPIView(APIView):
             )
 
 
+class AlbumUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        albums = Album.objects.filter(creator=request.user)
+        if albums.exists:
+            serializer = AlbumUserSerializer(albums, many=True)
+            album_data_list = serializer.data
+            validator = FileValidator()
+            for album_data in album_data_list:
+                thumbnail = validator.validate_url(
+                    data=album_data, field_name="thumbnail_url", default_url="null"
+                )
+                album_data["thumbnail_url"] = thumbnail
+
+            return Response(
+                {
+                    "message": "Lấy danh sách album của người dùng thành công!",
+                    "albums": album_data_list,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "Không tìm thấy album của người dùng!"},
+                status=status.HTTP_200_OK,
+            )
+
+
 class AlbumCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = AlbumCreateSerializer(data=request.data)
+
         if serializer.is_valid():
             if "thumbnail_url" in request.FILES:
                 thumbnail_file = request.FILES["thumbnail_url"]
@@ -77,6 +122,7 @@ class AlbumCreateAPIView(APIView):
                     "url"
                 )
             album = serializer.save(creator=request.user)
+
             return Response(
                 {
                     "message": "Tạo album thành công!",
@@ -84,6 +130,7 @@ class AlbumCreateAPIView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+
         return Response(
             {
                 "message": "Tạo album không thành công!",
@@ -186,7 +233,7 @@ class AlbumAddSongAPIView(APIView):
 
     def post(self, request, album_id, song_id):
         try:
-            album = Album.objects.get(id=album_id)
+            album = Album.objects.get(creator=request.user, id=album_id)
         except Album.DoesNotExist:
             return Response(
                 {
