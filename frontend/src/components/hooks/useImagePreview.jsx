@@ -8,7 +8,6 @@ export default function useImagePreview() {
     if (!file) return;
 
     const url = URL.createObjectURL(file);
-    console.log("url :", url);
     setImageURL(url);
   };
 

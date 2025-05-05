@@ -47,10 +47,10 @@ const Home = () => {
 
   return (
     <>
-      <Loading isOpen={isLoading}></Loading>
+      <Loading isOpen={isLoading} />
       <Swipper
         data={songs}
-        itemPerPage={6}
+        itemPerPage={4}
         showNavigation={true}
         title={"Được đề xuất cho hôm nay"}
       >
@@ -60,7 +60,7 @@ const Home = () => {
       {userInfo && (
         <Swipper
           data={users}
-          itemPerPage={6}
+          itemPerPage={4}
           showNavigation={true}
           title={"Người dùng được gợi ý"}
         >
@@ -70,7 +70,7 @@ const Home = () => {
 
       <Swipper
         data={songs}
-        itemPerPage={6}
+        itemPerPage={4}
         showNavigation={true}
         title={"Bài hát thịnh hành"}
       >

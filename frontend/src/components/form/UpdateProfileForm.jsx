@@ -1,13 +1,33 @@
 import Button from "../ui/Button/Button";
 import { Pencil, X } from "lucide-react";
 import useImagePreview from "../hooks/useImagePreview";
-const UpdateProfileForm = ({
-  handleSubmit,
-  data,
-  defaultAvatar,
-  setVisibleModal,
-}) => {
+import { useState } from "react";
+import { update } from "../../apis/userService";
+const UpdateProfileForm = ({ data, defaultAvatar, setVisibleModal }) => {
   const { imageURL, handleImageChange, resetImage } = useImagePreview();
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    avatar: imageURL,
+  });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const form = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        // Nếu là file thì append luôn, nếu là primitive thì convert sang string
+        if (value !== null && value !== undefined) {
+          form.append(key, value);
+        }
+      });
+      const res = await update(form);
+      if (res.data && res.status == 200) {
+        console.log("API Update profile : ", res.data);
+      }
+    } catch (error) {
+      console.log("Update profile bị lỗi: ", error);
+    }
+  };
   return (
     <div className="w-max mx-auto bg-[#282828] p-4 m-2 rounded-xl">
       <div className="flex items-center justify-between">
@@ -52,9 +72,25 @@ const UpdateProfileForm = ({
         <div className="">
           <form class="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label class="block text-sm font-semibold mb-1">Họ và tên</label>
+              <label class="block text-sm font-semibold mb-1">Họ</label>
               <input
-                placeholder={data?.fullname}
+                value={formData.first_name}
+                onChange={(e) =>
+                  setFormData({ ...formData, first_name: e.target.value })
+                }
+                placeholder="Họ"
+                type="text"
+                class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-1">Tên</label>
+              <input
+                value={formData.last_name}
+                onChange={(e) =>
+                  setFormData({ ...formData, last_name: e.target.value })
+                }
+                placeholder="Tên"
                 type="text"
                 class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
               />

@@ -15,7 +15,7 @@ const UploadSongForm = () => {
 
   const [formData, setFormData] = useState({
     title: "",
-    artist: "",
+    artist: userInfo?.full_name,
     genre: "",
     thumbnail_url: null,
     audio_url: null,
@@ -82,9 +82,6 @@ const UploadSongForm = () => {
           duration: "",
           download_count: 0,
         }));
-
-        console.log(thumbnailInputRef.current.value);
-        console.log(audioInputRef.current.value);
 
         thumbnailInputRef.current.value = null;
         audioInputRef.current.value = null;

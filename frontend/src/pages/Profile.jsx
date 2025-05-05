@@ -11,10 +11,10 @@ import Swipper from "../components/ui/Swipper/Swipper";
 import Button from "../components/ui/Button/Button";
 import Dropdown from "../components/ui/Dropdown/Dropdown";
 import MenuItem from "../components/ui/Dropdown/MenuItem";
-import { getSongs } from "../apis/songService";
+import { getMyListSong } from "../apis/songService";
 import MyModal from "../components/ui/MyModal/MyModal";
 import UpdateProfileForm from "../components/form/UpdateProfileForm";
-const Account = () => {
+const Profile = ({ data }) => {
   const [songs, setSongs] = useState([]);
 
   const { userInfo } = useContext(StoreContext);
@@ -23,18 +23,19 @@ const Account = () => {
   const [visibleModal, setVisibleModal] = useState(false);
 
   useEffect(() => {
-    const getListSongs = async () => {
+    const getMyListSongs = async () => {
       try {
-        const res = await getSongs();
+        // Gọi api từ songService
+        const res = await getMyListSong();
         if (res?.data && res?.data.data) {
           setSongs(res.data.data);
-          console.log("Danh sách bài hát :", res.data.data);
+          console.log("Danh sách bài hát của tôi:", res.data.data);
         }
       } catch (error) {
         console.log(error);
       }
     };
-    getListSongs();
+    getMyListSongs();
   }, []);
   return (
     <div className="w-full px-10 mt-10">
@@ -42,14 +43,14 @@ const Account = () => {
       <div className="header-accout_page flex items-center gap-10">
         <div className="image w-[232px] h-[232px] flex items-center justify-center rounded-full overflow-hidden">
           <img
-            src={userInfo?.avatar ? userInfo.avatar : defaultAvatar}
+            src={userInfo?.avatar != "null" ? userInfo?.avatar : defaultAvatar}
             alt="avatar"
             className="w-full h-full object-center rounded-full"
           />
         </div>
         <div className="infomation flex flex-col gap-4">
           <h1 className="name-Accout text-9xl font-extrabold">
-            {userInfo?.fullname}
+            {userInfo?.full_name}
           </h1>
           <span className="mx-2 text-sm font-bold hover:underline cursor-pointer">
             1 album
@@ -98,7 +99,7 @@ const Account = () => {
           data={songs}
           itemPerPage={6}
           showNavigation={true}
-          title={"Được đề xuất cho hôm nay"}
+          title={"Đã tải lên"}
         >
           {(item) => <Card data={item} />}
         </Swipper>
@@ -120,4 +121,4 @@ const Account = () => {
   );
 };
 
-export default Account;
+export default Profile;

@@ -13,7 +13,7 @@ const getMyInfo = async () => {
 };
 
 const getListUser = async () => {
-  return await axiosClient.get("/user/list/");
+  return await axiosClient.get("/user-list/");
 };
 
 export { register, login, getMyInfo, getListUser };

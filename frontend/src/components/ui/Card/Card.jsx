@@ -9,10 +9,9 @@ import useGetRecentSong from "../../hooks/useGetRecentSong";
 
 const Card = ({ artistType, data }) => {
   const { userInfo, setCurrentSong } = useContext(StoreContext);
+  const [recentSong, setResentSong] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [songPlayed, setSongPlayed] = useLocalStorage("recentSong", {});
-  const { id, avatar, title, last_name, first_name, artist, thumbnail_url } =
-    data || {};
+  const { id, avatar, title, full_name, artist, thumbnail_url } = data || {};
 
   const handPlaySong = () => {
     if (!userInfo) {
@@ -20,11 +19,7 @@ const Card = ({ artistType, data }) => {
       return;
     }
     setCurrentSong(data);
-    setSongPlayed(data);
   };
-  useEffect(() => {
-    if (songPlayed) setCurrentSong(songPlayed);
-  }, []);
   return (
     <div
       key={id}
@@ -89,9 +84,7 @@ const Card = ({ artistType, data }) => {
         </div>
       </div>
 
-      <h3 className="font-bold text-md truncate">
-        {title || `${first_name} ${last_name}`}
-      </h3>
+      <h3 className="font-bold text-md truncate">{title || `${full_name}`}</h3>
       <p className="text-sm text-gray-400 truncate">{!artistType && artist}</p>
     </div>
   );

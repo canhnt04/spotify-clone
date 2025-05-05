@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import Header from "../components/layout/Header/Header";
-import Sidebar from "../components/layout/Sidebar/Sidebar";
+import Leftbar from "../components/layout/Leftbar/Leftbar";
 import Footer from "../components/layout/Footer/Footer";
+import Rightbar from "../components/layout/Rightbar/Rightbar";
 
 const DefaultLayout = ({ children }) => {
-  const [currentSongPlay, setCurrentSongPlay] = useState(null);
-
   return (
     <div className="h-screen w-screen bg-black text-white flex flex-col pb-4">
       {/* Fixed Header */}
@@ -13,13 +12,16 @@ const DefaultLayout = ({ children }) => {
 
       {/* Main Body */}
       <div className="flex flex-1 mt-18 pb-20 overflow-hidden gap-3 px-5">
-        {/* Sidebar */}
-        <Sidebar />
+        {/* Leftbar */}
+        <Leftbar />
 
         {/* Content */}
         <main className="flex-1 ml-2 overflow-y-auto p-6 bg-[#181818] rounded-2xl">
           {children}
         </main>
+
+        {/* Rightbar */}
+        <Rightbar />
       </div>
 
       {/* Fixed Footer */}

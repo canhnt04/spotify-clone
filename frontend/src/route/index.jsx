@@ -1,7 +1,7 @@
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signin from "../pages/Signin";
-import Account from "../pages/Account";
+import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 import CommingSoon from "../pages/CommingSoon";
 import HeaderOnly from "../layouts/HeaderOnly";
@@ -13,7 +13,7 @@ export const routes = [
   { path: "/login", element: Login, layout: null, isPrivate: false },
   { path: "/signin", element: Signin, layout: null, isPrivate: false },
   // private route
-  { path: "/account", element: Account, layout: HeaderOnly, isPrivate: true },
+  { path: "/profile", element: Profile, layout: HeaderOnly, isPrivate: true },
   {
     path: "/song/upload",
     element: UploadSong,

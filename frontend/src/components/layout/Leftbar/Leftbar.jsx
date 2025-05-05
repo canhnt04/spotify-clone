@@ -5,17 +5,18 @@ import Tippy from "@tippyjs/react/headless";
 import Dropdown from "../../ui/Dropdown/Dropdown";
 import MenuItem from "../../ui/Dropdown/MenuItem";
 import MyModal from "../../ui/MyModal/MyModal";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { StoreContext } from "../../../contexts/StoreProvider";
 
-const Sidebar = () => {
+const Leftbar = () => {
   const [visible, setVisible] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
-  const isLogin = localStorage.getItem("accessToken") ? true : false;
+  const { userInfo } = useContext(StoreContext);
   useEffect(() => {
     console.log("visible", visible);
   });
   return (
-    <div className="w-[353px] bg-[#121212] p-4 rounded-2xl">
+    <div className="w-[353px] bg-[#121212] p-4 rounded-2xl overflow-y-auto">
       <div className="h-[40px] flex items-center justify-between">
         <h2 className="text-lg font-bold">Thư viện</h2>
 
@@ -52,9 +53,9 @@ const Sidebar = () => {
         </Tippy>
       </div>
 
-      {isLogin ? (
+      {userInfo ? (
         <>
-          <div className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+          <div className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
             <Song />
             <Song />
             <Song />
@@ -88,4 +89,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default Leftbar;

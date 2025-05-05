@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import logo from "../../../assets/images/logo.jpg";
 import avatar from "../../../assets/images/default_avatar.jpg";
@@ -15,15 +15,15 @@ import Button from "../../ui/Button/Button";
 import { Link } from "react-router-dom";
 import Dropdown from "../../ui/Dropdown/Dropdown";
 import MenuItem from "../../ui/Dropdown/MenuItem";
+import { StoreContext } from "../../../contexts/StoreProvider";
 const Header = () => {
   const [visible, setVisible] = useState(false);
-
+  const { userInfo } = useContext(StoreContext);
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
     window.location.reload();
   };
-  const isLogin = localStorage.getItem("accessToken") ? true : false;
   return (
     <header className="fixed top-0 left-0 right-0  bg-black text-white h-[64px] px-4 py-2 flex items-center justify-between shadow-md">
       {/* Left: Logo + Home + Search */}
@@ -51,7 +51,7 @@ const Header = () => {
           <a href="#" className="hover:text-white flex items-center gap-1">
             <Download size={14} /> Cài đặt Ứng dụng
           </a>
-          {isLogin ? (
+          {userInfo ? (
             <>
               <Link
                 to={"/"}
@@ -70,8 +70,8 @@ const Header = () => {
                   <Dropdown>
                     <MenuItem
                       header
-                      to={"/account"}
-                      title={"Tài khoản"}
+                      to={"/profile"}
+                      title={"Hồ sơ"}
                       icon={<SquareArrowOutUpRight size={18} />}
                     />
 
