@@ -6,7 +6,7 @@ from media.models import Song
 class SongFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
-        fields = ["id", "title", "artist"]
+        fields = "__all__"
 
 
 class SongListSerializer(serializers.ModelSerializer):

@@ -6,14 +6,16 @@ import NotFound from "../pages/NotFound";
 import CommingSoon from "../pages/CommingSoon";
 import HeaderOnly from "../layouts/HeaderOnly";
 import UploadSong from "../pages/UploadSong";
+import AlbumDetail from "../pages/AlbumDetail";
 
 export const routes = [
   // public route
   { path: "/", element: Home, isPrivate: false },
+  { path: `/album/detail/:id`, element: AlbumDetail, isPrivate: false },
   { path: "/login", element: Login, layout: null, isPrivate: false },
   { path: "/signin", element: Signin, layout: null, isPrivate: false },
   // private route
-  { path: "/profile", element: Profile, layout: HeaderOnly, isPrivate: true },
+  { path: "/profile", element: Profile, isPrivate: true },
   {
     path: "/song/upload",
     element: UploadSong,

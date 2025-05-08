@@ -10,13 +10,18 @@ import {
   Maximize2,
   Mic2,
   LayoutList,
+  Download,
 } from "lucide-react";
 import { StoreContext } from "../../../contexts/StoreProvider";
 import Button from "../../ui/Button/Button";
 import Song from "../../ui/Song/Song";
-
+import formatTime from "../../../utils/formatTime";
+import { addFavoriteSong } from "../../../apis/songService";
+import { ToastContext } from "../../../contexts/ToastContext";
 const Footer = () => {
-  const { userInfo, currentSong } = useContext(StoreContext);
+  const { userInfo, currentSong, setCurrentSong, playList } =
+    useContext(StoreContext);
+  const { toast } = useContext(ToastContext);
 
   if (!currentSong && userInfo) {
     return (
@@ -56,6 +61,8 @@ const Footer = () => {
     audio.addEventListener("timeupdate", update);
     audio.addEventListener("loadedmetadata", loaded);
 
+    playSong();
+
     return () => {
       audio.removeEventListener("timeupdate", update);
       audio.removeEventListener("loadedmetadata", loaded);
@@ -69,10 +76,39 @@ const Footer = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const formatTime = (t) => {
-    const m = Math.floor(t / 60);
-    const s = Math.floor(t % 60);
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  const playSong = () => {
+    const audio = audioRef.current;
+    audio.play();
+    setIsPlaying(true);
+  };
+
+  const handleAddFavoriteSong = async () => {
+    try {
+      const res = await addFavoriteSong(currentSong?.id);
+      if (res.data && res.data.favorite) {
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(currentSong.audio_url);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", `${currentSong.title || "song"}.mp3`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Tải file thất bại:", error);
+    }
   };
 
   return (
@@ -82,19 +118,24 @@ const Footer = () => {
         className={"flex items-center gap-3 w-1/3 min-w-0"}
         data={currentSong}
         isFooter
+        onClickFooter={handleAddFavoriteSong}
       />
 
       {/* Center */}
       <div className="flex flex-col items-center w-1/3">
         <div className="flex items-center gap-4 mb-1">
-          <SkipBack size={18} className="cursor-pointer" />
+          <button>
+            <SkipBack size={18} className="cursor-pointer" />
+          </button>
           <button
             className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
             onClick={togglePlay}
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} />}
           </button>
-          <SkipForward size={18} className="cursor-pointer" />
+          <button onClick={() => setCurrentSong(playList[0])}>
+            <SkipForward size={18} className="cursor-pointer" />
+          </button>
         </div>
         <div className="flex items-center gap-2 w-full">
           <span className="text-xs text-gray-400">
@@ -133,9 +174,9 @@ const Footer = () => {
           }}
           className="w-20 h-1 bg-gray-700 accent-white rounded-lg cursor-pointer"
         />
-        <LayoutList size={16} className="text-gray-400" />
-        <ListMusic size={16} className="text-gray-400" />
-        <Maximize2 size={16} className="text-gray-400" />
+        <button onClick={handleDownload} className="hover:text-white">
+          <Download size={16} className="text-gray-400" />
+        </button>
       </div>
 
       <audio ref={audioRef} src={currentSong.audio_url} />

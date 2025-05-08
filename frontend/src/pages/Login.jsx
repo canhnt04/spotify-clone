@@ -27,7 +27,6 @@ const Login = () => {
       if (res.data) {
         setIsLoading(false);
         localStorage.setItem("accessToken", res.data.accessToken);
-        localStorage.setItem("refreshToken", res.data.refreshToken);
         localStorage.setItem("userId", res.data.userId);
         toast.success(res.data.message);
         setTimeout(() => (window.location.href = "/"), 2000);

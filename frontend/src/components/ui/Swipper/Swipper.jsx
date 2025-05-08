@@ -30,7 +30,7 @@ const Swipper = ({ data, itemPerPage = 6, children, title }) => {
         slidesPerView={itemPerPage}
         onSwiper={(swiper) => setSwiperInstance(swiper)}
       >
-        {data.map((item, i) => (
+        {data?.map((item, i) => (
           <SwiperSlide key={i}>{children(item)}</SwiperSlide>
         ))}
       </Swiper>

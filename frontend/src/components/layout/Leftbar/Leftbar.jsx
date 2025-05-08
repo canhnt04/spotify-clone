@@ -7,17 +7,40 @@ import MenuItem from "../../ui/Dropdown/MenuItem";
 import MyModal from "../../ui/MyModal/MyModal";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
+import CreateAlbumForm from "../../form/CreateAlbumForm";
+import { getMyAlbum } from "../../../apis/albumService";
+import LibraryItem from "../../ui/LibraryItem/LibraryItem";
+
+import SimpleBar from "simplebar-react";
 
 const Leftbar = () => {
   const [visible, setVisible] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
   const { userInfo } = useContext(StoreContext);
+
+  const [albums, setAlbums] = useState(null);
+
   useEffect(() => {
-    console.log("visible", visible);
-  });
+    const getAlbum = async () => {
+      await getMyAlbum()
+        .then((res) => {
+          setAlbums(res.data.albums);
+        })
+        .catch((error) => console.log(error));
+    };
+    getAlbum();
+  }, []);
   return (
-    <div className="w-[353px] bg-[#121212] p-4 rounded-2xl overflow-y-auto">
-      <div className="h-[40px] flex items-center justify-between">
+    <div className="w-[353px] bg-[#121212] py-4 rounded-2xl">
+      <MyModal
+        open={visibleModal}
+        setOpen={setVisibleModal}
+        onClose={() => setVisibleModal(false)}
+        isLoading
+      >
+        <CreateAlbumForm setVisibleModal={setVisibleModal} />
+      </MyModal>
+      <div className="h-[40px] flex items-center px-4 justify-between">
         <h2 className="text-lg font-bold">Thư viện</h2>
 
         <Tippy
@@ -27,15 +50,22 @@ const Leftbar = () => {
           onClickOutside={() => setVisible(false)}
           render={(attrs) => (
             <Dropdown>
-              <MenuItem title={"Tạo album"} icon={<ListMusic size={24} />} />
+              <MenuItem
+                title={"Tạo album"}
+                icon={
+                  <ListMusic
+                    size={24}
+                    onClick={() => {
+                      setVisibleModal(true);
+                      setVisible(false);
+                    }}
+                  />
+                }
+              />
               <MenuItem
                 to={"/song/upload"}
                 title={"Upload bài hát/video"}
                 icon={<Upload size={24} />}
-              />
-              <MenuItem
-                title={"Bài hát yêu thích"}
-                icon={<HeartPulse size={24} />}
               />
             </Dropdown>
           )}
@@ -54,17 +84,61 @@ const Leftbar = () => {
       </div>
 
       {userInfo ? (
-        <>
-          <div className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-            <Song />
-            <Song />
-            <Song />
-            <Song />
-            <Song />
+        <SimpleBar
+          style={{ maxHeight: 500, height: "max-content", padding: "0 20px" }}
+        >
+          <div className="rounded-lg mt-4 flex flex-col ">
+            {/* {albums &&
+                albums?.map((album) => <Song key={album.id} data={album} />)} */}
+            <LibraryItem
+              album={{
+                thumbnail_url:
+                  "http://res.cloudinary.com/dsohleblh/v1746625759/idj3fpfb3fdedxesfymc.jpg",
+                name: "Đánh đổi",
+              }}
+            />
+            <LibraryItem
+              user={{
+                avatar:
+                  "http://res.cloudinary.com/dsohleblh/v1746459820/om24yhqpywifxkkc3mua.jpg",
+                full_name: "Lê Phúc",
+              }}
+            />
+            <LibraryItem favorite />
+            <LibraryItem
+              album={{
+                thumbnail_url:
+                  "http://res.cloudinary.com/dsohleblh/v1746625759/idj3fpfb3fdedxesfymc.jpg",
+                name: "Đánh đổi",
+              }}
+            />
+
+            <LibraryItem
+              user={{
+                avatar:
+                  "http://res.cloudinary.com/dsohleblh/v1746459820/om24yhqpywifxkkc3mua.jpg",
+                full_name: "Lê Phúc",
+              }}
+            />
+            <LibraryItem
+              album={{
+                thumbnail_url:
+                  "http://res.cloudinary.com/dsohleblh/v1746625759/idj3fpfb3fdedxesfymc.jpg",
+                name: "Đánh đổi",
+              }}
+            />
+
+            <LibraryItem
+              user={{
+                avatar:
+                  "http://res.cloudinary.com/dsohleblh/v1746459820/om24yhqpywifxkkc3mua.jpg",
+                full_name: "Lê Phúc",
+              }}
+            />
           </div>
-        </>
+        </SimpleBar>
       ) : (
-        <>
+        <div className="p-4">
           <div className="bg-[#242424] rounded-lg p-4 mt-4 ">
             <h3 className="font-bold text-white text-sm mb-1">
               Tải video âm nhạc đầu tiên của bạn
@@ -83,7 +157,7 @@ const Leftbar = () => {
             </p>
             <Button className="mt-2">Xem danh sách album</Button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

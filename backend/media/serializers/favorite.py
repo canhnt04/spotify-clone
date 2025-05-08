@@ -2,19 +2,23 @@ from rest_framework import serializers
 from media.models import Favorite
 from media.serializers.song import SongFavoriteSerializer
 from accounts.serializers import UserFavoriteSerializer
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
 
 class FavoriteListSerializer(serializers.ModelSerializer):
-    user = UserFavoriteSerializer(read_only=True)
+    user = UserFavoriteSerializer(read_only = True)
     song = SongFavoriteSerializer(read_only=True)
 
     class Meta:
         model = Favorite
-        fields = ["user", "song"]
+        fields = ["user","song"]
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        song_data = rep.pop('song', {})
+        rep.pop('user',None)
+        rep.update(song_data)
+        return rep
 
 class FavoriteCreateSerializer(serializers.ModelSerializer):
 

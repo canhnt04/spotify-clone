@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function useImagePreview() {
   const [imageURL, setImageURL] = useState(null);
+  const [file, setFile] = useState(null);
 
   const handleImageChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(selectedFile);
     setImageURL(url);
+    setFile(selectedFile);
   };
 
   const resetImage = () => {
@@ -16,6 +18,7 @@ export default function useImagePreview() {
       URL.revokeObjectURL(imageURL);
     }
     setImageURL(null);
+    setFile(null);
   };
 
   useEffect(() => {
@@ -28,6 +31,7 @@ export default function useImagePreview() {
 
   return {
     imageURL,
+    file,
     handleImageChange,
     resetImage,
   };

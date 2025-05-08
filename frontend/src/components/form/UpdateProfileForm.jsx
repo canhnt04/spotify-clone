@@ -1,14 +1,14 @@
 import Button from "../ui/Button/Button";
 import { Pencil, X } from "lucide-react";
 import useImagePreview from "../hooks/useImagePreview";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { update } from "../../apis/userService";
 const UpdateProfileForm = ({ data, defaultAvatar, setVisibleModal }) => {
-  const { imageURL, handleImageChange, resetImage } = useImagePreview();
+  const { imageURL, file, handleImageChange, resetImage } = useImagePreview();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
-    avatar: imageURL,
+    avatar: null,
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +28,13 @@ const UpdateProfileForm = ({ data, defaultAvatar, setVisibleModal }) => {
       console.log("Update profile bị lỗi: ", error);
     }
   };
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      avatar: file ?? null,
+    }));
+  }, [file, imageURL]);
   return (
     <div className="w-max mx-auto bg-[#282828] p-4 m-2 rounded-xl">
       <div className="flex items-center justify-between">
@@ -59,7 +66,7 @@ const UpdateProfileForm = ({ data, defaultAvatar, setVisibleModal }) => {
               accept="image/*"
               onChange={handleImageChange}
             />
-            <Pencil size={40} />
+            <Pencil strokeWidth={1} size={40} />
             <span
               onClick={resetImage}
               className="text-sm font-bold hover:underline cursor-pointer"

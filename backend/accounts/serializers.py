@@ -189,7 +189,6 @@ class UserFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username"]
-        read_only_fields = ["id"]
 
 
 class UserAlbumSerializer(serializers.ModelSerializer):
