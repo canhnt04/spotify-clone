@@ -81,13 +81,13 @@ class SongListAPIView(APIView):
         validator = FileValidator()
         for song_data in song_data_list:
             thumbnail_url = validator.validate_url(
-                data=song_data, field_name="thumbnail_url", default_url="null"
+                data=song_data, field_name="thumbnail_url", default_url=None
             )
             audio_url = validator.validate_url(
-                data=song_data, field_name="audio_url", default_url="null"
+                data=song_data, field_name="audio_url", default_url=None
             )
             video_url = validator.validate_url(
-                data=song_data, field_name="video_url", default_url="null"
+                data=song_data, field_name="video_url", default_url=None
             )
             song_data["thumbnail_url"] = thumbnail_url
             song_data["audio_url"] = audio_url
@@ -109,13 +109,13 @@ class SongListUserAPIView(APIView):
         validator = FileValidator()
         for song_data in song_data_list:
             thumbnail_url = validator.validate_url(
-                data=song_data, field_name="thumbnail_url", default_url="null"
+                data=song_data, field_name="thumbnail_url", default_url=None
             )
             audio_url = validator.validate_url(
-                data=song_data, field_name="audio_url", default_url="null"
+                data=song_data, field_name="audio_url", default_url=None
             )
             video_url = validator.validate_url(
-                data=song_data, field_name="video_url", default_url="null"
+                data=song_data, field_name="video_url", default_url=None
             )
             song_data["thumbnail_url"] = thumbnail_url
             song_data["audio_url"] = audio_url
@@ -136,13 +136,13 @@ class SongDetailAPIView(APIView):
             song_data = serializer.data
             validator = FileValidator()
             thumbnail_url = validator.validate_url(
-                data=song_data, field_name="thumbnail_url", default_url="null"
+                data=song_data, field_name="thumbnail_url", default_url=None
             )
             audio_url = validator.validate_url(
-                data=song_data, field_name="audio_url", default_url="null"
+                data=song_data, field_name="audio_url", default_url=None
             )
             video_url = validator.validate_url(
-                data=song_data, field_name="video_url", default_url="null"
+                data=song_data, field_name="video_url", default_url=None
             )
             song_data["thumbnail_url"] = thumbnail_url
             song_data["audio_url"] = audio_url
@@ -174,13 +174,13 @@ class SongSearchSerializer(APIView):
         validator = FileValidator()
         for song_data in song_data_list:
             thumbnail_url = validator.validate_url(
-                data=song_data, field_name="thumbnail_url", default_url="null"
+                data=song_data, field_name="thumbnail_url", default_url=None
             )
             audio_url = validator.validate_url(
-                data=song_data, field_name="audio_url", default_url="null"
+                data=song_data, field_name="audio_url", default_url=None
             )
             video_url = validator.validate_url(
-                data=song_data, field_name="video_url", default_url="null"
+                data=song_data, field_name="video_url", default_url=None
             )
             song_data["thumbnail_url"] = thumbnail_url
             song_data["audio_url"] = audio_url

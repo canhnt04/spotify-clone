@@ -89,7 +89,7 @@ class ProfileAPIView(APIView):
         user_data = serializer.data
         validator = FileValidator()
         avatar_url = validator.validate_url(
-            data=user_data, field_name="avatar", default_url="null"
+            data=user_data, field_name="avatar", default_url=None
         )
         user_data["avatar"] = avatar_url
 
@@ -148,7 +148,7 @@ class UserListAPIView(APIView):
 
         for user_data in user_data_list:
             avatar_url = validator.validate_url(
-                data=user_data, field_name="avatar", default_url="null"
+                data=user_data, field_name="avatar", default_url=None
             )
             user_data["avatar"] = avatar_url
 
@@ -189,7 +189,7 @@ class ProfileAllAPIView(APIView):
             avatar_url = validator.validate_url(
                 data=user_data,
                 field_name="avatar",
-                default_url="null",
+                default_url=None,
             )
             user_data["avatar"] = avatar_url
 
@@ -212,7 +212,7 @@ class ProfileOtherAPIView(APIView):
             user_data = serializer.data
             validator = FileValidator()
             avatar_url = validator.validate_url(
-                data=user_data, field_name="avatar", default_url="null"
+                data=user_data, field_name="avatar", default_url=None
             )
             user_data["avatar"] = avatar_url
 
