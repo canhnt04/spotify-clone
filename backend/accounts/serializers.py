@@ -195,3 +195,22 @@ class UserAlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username"]
+
+
+class UserLibrarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )

@@ -6,12 +6,11 @@ from accounts.serializers import UserFavoriteSerializer
 
 
 class FavoriteListSerializer(serializers.ModelSerializer):
-    user = UserFavoriteSerializer(read_only = True)
     song = SongFavoriteSerializer(read_only=True)
 
     class Meta:
         model = Favorite
-        fields = ["user","song"]
+        fields = ["song"]
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)

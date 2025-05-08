@@ -9,6 +9,12 @@ class AlbumListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class AlbumLibrarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = "__all__"
+
+
 class AlbumUserSerializer(serializers.ModelSerializer):
     user = UserAlbumSerializer(read_only=True)
 
