@@ -8,12 +8,11 @@ User = get_user_model()
 
 
 class FavoriteListSerializer(serializers.ModelSerializer):
-    user = UserFavoriteSerializer(read_only=True)
     song = SongFavoriteSerializer(read_only=True)
 
     class Meta:
         model = Favorite
-        fields = ["user", "song"]
+        fields = ["song"]
 
 
 class FavoriteCreateSerializer(serializers.ModelSerializer):

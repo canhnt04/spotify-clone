@@ -7,4 +7,5 @@ urlpatterns = [
     path("", include("media.urls.album")),
     path("", include("media.urls.favorite")),
     path("", include("media.urls.download")),
+    path("", include("media.urls.library")),
 ]
