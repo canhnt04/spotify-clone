@@ -5,13 +5,15 @@ import Swipper from "../components/ui/Swipper/Swipper";
 import Card from "../components/ui/Card/Card";
 import Loading from "../components/ui/Loading/Loading";
 import { StoreContext } from "../contexts/StoreProvider";
+import { getAllAlbum } from "../apis/albumService";
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { userInfo } = useContext(StoreContext);
+  const { userInfo, currentSong } = useContext(StoreContext);
   const [songs, setSongs] = useState([]);
   const [users, setUsers] = useState([]);
+  const [albums, setAlbums] = useState(null);
 
-  const getListSongs = async () => {
+  const fetchListSongs = async () => {
     setIsLoading(true);
     try {
       const res = await getSongs();
@@ -26,7 +28,7 @@ const Home = () => {
     }
   };
 
-  const getListUsers = async () => {
+  const fetchListUsers = async () => {
     setIsLoading(true);
     try {
       const res = await getListUser();
@@ -40,9 +42,20 @@ const Home = () => {
     }
   };
 
+  const fetchListAlbum = async () => {
+    try {
+      const res = await getAllAlbum();
+      if (res.data) {
+        setAlbums(res.data.album);
+        console.log("List albums :", res.data.album);
+      }
+    } catch (error) {}
+  };
+
   useEffect(() => {
-    getListSongs();
-    getListUsers();
+    fetchListSongs();
+    fetchListUsers();
+    fetchListAlbum();
   }, []);
 
   return (
@@ -50,7 +63,7 @@ const Home = () => {
       <Loading isOpen={isLoading} />
       <Swipper
         data={songs}
-        itemPerPage={4}
+        itemPerPage={currentSong ? 4 : 6}
         showNavigation={true}
         title={"Được đề xuất cho hôm nay"}
       >
@@ -60,7 +73,7 @@ const Home = () => {
       {userInfo && (
         <Swipper
           data={users}
-          itemPerPage={4}
+          itemPerPage={currentSong ? 4 : 6}
           showNavigation={true}
           title={"Người dùng được gợi ý"}
         >
@@ -69,12 +82,20 @@ const Home = () => {
       )}
 
       <Swipper
-        data={songs}
-        itemPerPage={4}
+        data={albums}
+        itemPerPage={currentSong ? 4 : 6}
         showNavigation={true}
-        title={"Bài hát thịnh hành"}
+        title={"Album đã phát hành"}
       >
-        {(item) => <Card data={item} />}
+        {(item) => (
+          <Card
+            data={item}
+            artistType={false}
+            showDetailAlbum={true}
+            hidePlayButton={false}
+            showModalIfUnauth={false}
+          />
+        )}
       </Swipper>
     </>
   );

@@ -13,6 +13,12 @@ class FavoriteListSerializer(serializers.ModelSerializer):
         model = Favorite
         fields = ["song"]
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        song_data = rep.pop('song', {})
+        rep.pop('user',None)
+        rep.update(song_data)
+        return rep
 
 class FavoriteCreateSerializer(serializers.ModelSerializer):
 

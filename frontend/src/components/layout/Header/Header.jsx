@@ -6,6 +6,10 @@ import {
   Download,
   Home,
   LogOut,
+  MessageSquareWarning,
+  MessagesSquare,
+  Music4,
+  Navigation,
   Send,
   SquareArrowOutUpRight,
 } from "lucide-react";
@@ -39,10 +43,10 @@ const Header = () => {
           to={"/"}
           className="h-full w-[48px] flex items-center justify-center rounded-full bg-[#1f1f1f]"
         >
-          <Home size={30} />
+          <Music4 strokeWidth={1.5} absoluteStrokeWidth />
         </Link>
 
-        <Search />
+        <Search strokeWidth={1} />
       </div>
 
       {/* Right: Menu */}
@@ -57,7 +61,7 @@ const Header = () => {
                 to={"/"}
                 className="h-full w-[48px] px-2 py-[11px] flex items-center justify-center rounded-full bg-[#1f1f1f] hover:scale-103"
               >
-                <Send size={24} />
+                <MessagesSquare strokeWidth={1.5} size={24} />
               </Link>
 
               <Tippy
@@ -69,6 +73,7 @@ const Header = () => {
                 render={(attrs) => (
                   <Dropdown>
                     <MenuItem
+                      onClick={() => setVisible(false)}
                       header
                       to={"/profile"}
                       title={"Hồ sơ"}
@@ -78,7 +83,7 @@ const Header = () => {
                     <MenuItem
                       header
                       title={"Góp ý kiến"}
-                      icon={<SquareArrowOutUpRight size={18} />}
+                      icon={<MessageSquareWarning size={18} />}
                     />
                     <MenuItem
                       header
@@ -91,12 +96,12 @@ const Header = () => {
               >
                 <div
                   onClick={() => setVisible(!visible)}
-                  className="h-full w-[48px] p-2 flex items-center justify-center rounded-full bg-[#1f1f1f] hover:scale-103 cursor-pointer"
+                  className="h-[48px] w-[48px] overflow-hidden p-1 flex items-center justify-center rounded-full bg-[#1f1f1f] hover:scale-103 cursor-pointer"
                 >
                   <img
-                    src={avatar}
+                    src={userInfo.avatar !== "null" ? userInfo.avatar : avatar}
                     alt="avatar"
-                    className="w-full h-full rounded-full"
+                    className="w-full h-full rounded-full object-center"
                   />
                 </div>
               </Tippy>

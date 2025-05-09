@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 
 const MenuItem = ({ title, icon, to, href, onClick, header }) => {
   let Comp = "button";
-  const props = {
-    onClick,
-  };
+  const props = {};
   if (to) {
     Comp = Link;
     props.to = to;

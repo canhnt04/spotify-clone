@@ -3,6 +3,7 @@ import Header from "../components/layout/Header/Header";
 import Leftbar from "../components/layout/Leftbar/Leftbar";
 import Footer from "../components/layout/Footer/Footer";
 import Rightbar from "../components/layout/Rightbar/Rightbar";
+import SimpleBar from "simplebar-react";
 
 const DefaultLayout = ({ children }) => {
   return (
@@ -16,8 +17,17 @@ const DefaultLayout = ({ children }) => {
         <Leftbar />
 
         {/* Content */}
-        <main className="flex-1 ml-2 overflow-y-auto p-6 bg-[#181818] rounded-2xl">
-          {children}
+        <main className="flex-1 ml-2 bg-[#181818] rounded-2xl overflow-hidden">
+          {/* {children} */}
+          <SimpleBar
+            style={{
+              maxHeight: 500,
+              height: "max-content",
+              padding: "32px 20px 0px 20px",
+            }}
+          >
+            {children}
+          </SimpleBar>
         </main>
 
         {/* Rightbar */}

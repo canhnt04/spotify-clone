@@ -7,6 +7,7 @@ from media.serializers.favorite import (
     FavoriteListSerializer,
     FavoriteCreateSerializer,
 )
+from accounts.validators import FileValidator
 
 
 class FavoriteListAPIView(APIView):
@@ -16,10 +17,25 @@ class FavoriteListAPIView(APIView):
         favorites = Favorite.objects.filter(user=request.user)
         if favorites.exists():
             serializer = FavoriteListSerializer(favorites, many=True)
+            favorite_data_list = serializer.data
+            validator = FileValidator()
+            for favorite_data in favorite_data_list:
+                thumbnail_url = validator.validate_url(
+                    data=favorite_data, field_name="thumbnail_url", default_url="null"
+            )
+                audio_url = validator.validate_url(
+                    data=favorite_data, field_name="audio_url", default_url="null"
+            )
+                video_url = validator.validate_url(
+                    data=favorite_data, field_name="video_url", default_url="null"
+            )
+                favorite_data["thumbnail_url"] = thumbnail_url
+                favorite_data["audio_url"] = audio_url
+                favorite_data["video_url"] = video_url
             return Response(
                 {
                     "message": "Lấy danh sách bài hát yêu thích thành công!",
-                    "favorites": serializer.data,
+                    "favorites": favorite_data_list,
                 },
                 status=status.HTTP_200_OK,
             )

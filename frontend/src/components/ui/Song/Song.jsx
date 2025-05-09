@@ -1,10 +1,16 @@
 import { HeartPlus, Play } from "lucide-react";
-const Song = ({ data, isFooter, className }) => {
+import { useContext } from "react";
+import { StoreContext } from "../../../contexts/StoreProvider";
+const Song = ({ data, isFooter, className, onClickFooter }) => {
+  const { currentSong, setCurrentSong } = useContext(StoreContext);
+
   return (
     <div
       className={
         className ||
-        "group flex items-center gap-4 my-2 px-4 py-2 cursor-pointer rounded-md hover:bg-[#2a2a2a]}"
+        `group flex items-center gap-4 my-2 px-4 py-2 cursor-pointer rounded-md ${
+          currentSong?.id === data?.id ? "bg-[#2a2a2a]" : ""
+        }`
       }
     >
       <div className="relative w-12 h-12">
@@ -20,21 +26,28 @@ const Song = ({ data, isFooter, className }) => {
 
         {/* Play icon đè lên và hiện khi hover */}
         {!isFooter && (
-          <div className="absolute inset-0 flex items-center justify-center bg-opacity-40 rounded z-10 opacity-0 group-   hover:opacity-100 transition duration-200">
+          <button
+            className="absolute inset-0 flex items-center justify-center bg-opacity-40 rounded z-10 opacity-0 group-   hover:opacity-100 transition duration-200"
+            onClick={() => {
+              setCurrentSong(data);
+              console.log(data);
+            }}
+          >
             <Play size={24} className="text-white" />
-          </div>
+          </button>
         )}
       </div>
       <div className="flex flex-col">
         <span className="text-white text-sm font-semibold line-clamp-1">
-          {data?.title || "Nước mắt cá sấu"}
+          {data?.title || data?.name}
         </span>
-        <span className="text-gray-400 text-xs">
-          {data?.artist || "HIEUTHUHAI"}
-        </span>
+        <span className="text-gray-400 text-xs">{data?.artist || ""}</span>
       </div>
       {isFooter && (
-        <button className="ml-2 border border-gray-600 hover:bg-[#2a2a2a] rounded-full w-6 h-6 flex items-center justify-center text-xs text-white cursor-pointer">
+        <button
+          className="ml-2 border border-gray-600 bg-red-500 hover:bg-[#2a2a2a] rounded-full w-6 h-6 flex items-center justify-center text-xs text-white cursor-pointer"
+          onClick={onClickFooter}
+        >
           <HeartPlus size={14} />
         </button>
       )}
