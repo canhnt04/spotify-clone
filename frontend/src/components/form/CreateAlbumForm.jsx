@@ -4,8 +4,10 @@ import useImagePreview from "../hooks/useImagePreview";
 import Button from "../ui/Button/Button";
 import { postAlbum } from "../../apis/albumService";
 import { ToastContext } from "../../contexts/ToastContext";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 const CreateAlbumForm = ({ setVisibleModal }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { imageURL, file, handleImageChange, resetImage } = useImagePreview();
   const { toast } = useContext(ToastContext);
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
@@ -31,9 +34,11 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
       if (res.data && res.status == 201) {
         toast.success(res.data.message);
         setVisibleModal(false);
+        setIsLoading(false);
       }
     } catch (error) {
       console.log("Create album fail: ", error);
+      setIsLoading(false);
     }
   };
 
@@ -116,7 +121,21 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
                 class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded text-white focus:outline-none focus:ring focus:border-green-500"
               />
             </div>
-            <Button className={"py-3 px-10"}>TẠO</Button>
+            <Button className={"py-3 px-10"}>
+              {!isLoading ? (
+                <span>TẠO</span>
+              ) : (
+                <ScaleLoader
+                  color={"#000"}
+                  loading={true}
+                  height={12}
+                  radius={20}
+                  width={2}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+                />
+              )}
+            </Button>
           </form>
         </div>
       </div>
