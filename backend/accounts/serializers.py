@@ -67,6 +67,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "avatar"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["full_name"] = f"{instance.last_name} {instance.first_name}"
+
+        return OrderedDict(
+            [
+                ("id", data.get("id", "")),
+                ("full_name", data.get("full_name", "")),
+                ("avatar", data.get("avatar")),
+            ]
+        )
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -183,35 +202,3 @@ class UnbanUserSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get("is_active", False)
         instance.save()
         return instance
-
-
-class UserFavoriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username"]
-        read_only_fields = ["id"]
-
-
-class UserAlbumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username"]
-
-
-class UserLibrarySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "avatar"]
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-
-        data["full_name"] = f"{instance.last_name} {instance.first_name}"
-
-        return OrderedDict(
-            [
-                ("id", data.get("id", "")),
-                ("full_name", data.get("full_name", "")),
-                ("avatar", data.get("avatar")),
-            ]
-        )

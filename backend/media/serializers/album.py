@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from media.models import Album, Song
-from accounts.serializers import UserAlbumSerializer
+from accounts.serializers import UserSerializer
 
 
 class AlbumListSerializer(serializers.ModelSerializer):
@@ -9,14 +9,8 @@ class AlbumListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class AlbumLibrarySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = "__all__"
-
-
 class AlbumUserSerializer(serializers.ModelSerializer):
-    user = UserAlbumSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Album
@@ -31,26 +25,10 @@ class AlbumDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class AlbumCreateSerializer(serializers.ModelSerializer):
+class AlbumWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ["name", "description", "thumbnail_url"]
-
-
-class AlbumUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = ["name", "description", "thumbnail_url"]
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-
-        thumbnail = data.get("thumbnail_url")
-        if thumbnail:
-            if thumbnail.startswith("image/upload/"):
-                thumbnail = thumbnail.replace("image/upload/", "")
-            thumbnail = f"http://res.cloudinary.com/dsohleblh/{thumbnail}"
-        return data
 
 
 class AlbumAddSongSerializer(serializers.Serializer):
@@ -74,7 +52,7 @@ class AlbumAddSongSerializer(serializers.Serializer):
         album = self.context["album"]
         song = self.validated_data["song"]
         album.songs.add(song)
-        return album
+        return {"album": str(album.id), "song": str(song.id)}
 
 
 class AlbumDeleteSongSerializer(serializers.Serializer):
@@ -83,7 +61,6 @@ class AlbumDeleteSongSerializer(serializers.Serializer):
     def validate(self, attrs):
         album = self.context.get("album")
         song = attrs["song"]
-
         if song not in album.songs.all():
             raise serializers.ValidationError(
                 {"song": "Bài hát không tồn tại trong album!"}
@@ -95,4 +72,4 @@ class AlbumDeleteSongSerializer(serializers.Serializer):
         album = self.context["album"]
         song = self.validated_data["song"]
         album.songs.remove(song)
-        return album
+        return {"album": str(album.id), "song": str(song.id)}
