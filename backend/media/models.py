@@ -22,9 +22,6 @@ class Song(models.Model):
     listen_count = models.IntegerField(default=0)
     created_at = models.DateField(auto_now_add=True)
 
-    def __str__(self):
-        return self.title
-
 
 class Album(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -38,9 +35,6 @@ class Album(models.Model):
         related_name="albums",
     )
     created_at = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Favorite(models.Model):
@@ -60,9 +54,6 @@ class Favorite(models.Model):
     class Meta:
         unique_together = ("user", "song")
 
-    def __str__(self):
-        return f"{self.user.username} like {self.song.title}"
-
 
 class Download(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -80,27 +71,27 @@ class Download(models.Model):
     )
     download_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        if self.song:
-            item = self.song.title
-        else:
-            item = "Unknown"
-        return f"{self.user.username} download{item}"
-
 
 class Library(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="libraries",
+        related_name="owned_libraries",
+    )
+    saved_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="saved_in_libraries",
     )
     album = models.ForeignKey(
         "Album",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="libraries",
+        related_name="included_in_libraries",
     )
 
     added_at = models.DateTimeField(auto_now_add=True)

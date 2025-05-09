@@ -11,8 +11,7 @@ from media.serializers.album import (
     AlbumListSerializer,
     AlbumDetailSerializer,
     AlbumUserSerializer,
-    AlbumCreateSerializer,
-    AlbumUpdateSerializer,
+    AlbumWriteSerializer,
     AlbumAddSongSerializer,
     AlbumDeleteSongSerializer,
 )
@@ -58,7 +57,7 @@ class AlbumDetailAPIView(APIView):
             album_data = serializer.data
             validator = FileValidator()
             thumbnail = validator.validate_url(
-                data=album_data, field_name="thumbnail_url", default_url="null"
+                data=album_data, field_name="thumbnail_url", default_url=None
             )
             album_data["thumbnail_url"] = thumbnail
             return Response(
@@ -88,7 +87,7 @@ class AlbumUserAPIView(APIView):
             validator = FileValidator()
             for album_data in album_data_list:
                 thumbnail = validator.validate_url(
-                    data=album_data, field_name="thumbnail_url", default_url="null"
+                    data=album_data, field_name="thumbnail_url", default_url=None
                 )
                 album_data["thumbnail_url"] = thumbnail
 
@@ -110,7 +109,7 @@ class AlbumCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = AlbumCreateSerializer(data=request.data)
+        serializer = AlbumWriteSerializer(data=request.data)
 
         if serializer.is_valid():
             if "thumbnail_url" in request.FILES:
@@ -154,7 +153,7 @@ class AlbumUpdateAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        serializer = AlbumUpdateSerializer(album, data=request.data, partial=True)
+        serializer = AlbumWriteSerializer(album, data=request.data, partial=True)
 
         if serializer.is_valid():
             if "thumbnail_url" in request.FILES:
@@ -245,10 +244,11 @@ class AlbumAddSongAPIView(APIView):
             context={"album": album}, data={"song": song_id}
         )
         if serializer.is_valid():
-            serializer.save()
+            result = serializer.save()
             return Response(
                 {
                     "message": "Thêm bài hát vào album thành công!",
+                    "data": result,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -256,7 +256,7 @@ class AlbumAddSongAPIView(APIView):
             return Response(
                 {
                     "message": "Thêm bài hát vào album không thành công!",
-                    "errors": serializer.errors,
+                    "error": serializer.errors,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -279,11 +279,11 @@ class AlbumDeleteSongAPIView(APIView):
             context={"album": album}, data={"song": song_id}
         )
         if serializer.is_valid():
-            serializer.save()
+            result = serializer.save()
             return Response(
                 {
                     "message": "Xóa bài hát khỏi album thành công!",
-                    "album-song": serializer.data,
+                    "data": result,
                 },
                 status=status.HTTP_200_OK,
             )

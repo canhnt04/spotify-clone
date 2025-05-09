@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from media.models import Favorite
 from media.serializers.song import SongFavoriteSerializer
-from accounts.serializers import UserFavoriteSerializer
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 
 class FavoriteListSerializer(serializers.ModelSerializer):
