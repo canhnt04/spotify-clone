@@ -4,12 +4,7 @@ import {
   Pause,
   SkipForward,
   SkipBack,
-  Shuffle,
   Volume2,
-  ListMusic,
-  Maximize2,
-  Mic2,
-  LayoutList,
   Download,
 } from "lucide-react";
 import { StoreContext } from "../../../contexts/StoreProvider";

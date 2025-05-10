@@ -124,6 +124,35 @@ class SongListUserAPIView(APIView):
             {"message": "Danh sách bài hát của người dùng", "data": song_data_list},
             status=status.HTTP_200_OK,
         )
+    
+class SongListProfileUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = request.user
+        songs = Song.objects.filter(creator_id=user_id)
+        serializer = SongListSerializer(songs, many=True)
+        song_data_list = serializer.data
+        validator = FileValidator()
+        for song_data in song_data_list:
+            thumbnail_url = validator.validate_url(
+                data=song_data, field_name="thumbnail_url", default_url=None
+            )
+            audio_url = validator.validate_url(
+                data=song_data, field_name="audio_url", default_url=None
+            )
+            video_url = validator.validate_url(
+                data=song_data, field_name="video_url", default_url=None
+            )
+            song_data["thumbnail_url"] = thumbnail_url
+            song_data["audio_url"] = audio_url
+            song_data["video_url"] = video_url
+        return Response(
+            {"message": "Danh sách bài hát của người dùng", "data": song_data_list},
+            status=status.HTTP_200_OK,
+        )
+    
+    
 
 
 class SongDetailAPIView(APIView):

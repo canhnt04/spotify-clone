@@ -1,6 +1,8 @@
 import { HeartPlus, Play } from "lucide-react";
 import favoriteImage from "../../../assets/images/favorite_song.jpg";
+import { useNavigate } from "react-router-dom";
 const LibraryItem = ({ album, user, favorite, isFooter }) => {
+  const navigate = useNavigate();
   const handeTypeData = () => {
     let type = "";
     if (album) {
@@ -13,6 +15,21 @@ const LibraryItem = ({ album, user, favorite, isFooter }) => {
       return (type = "Danh sách phát");
     }
     return "";
+  };
+
+  const handChooseItem = () => {
+    if (album) {
+      navigate(`/album/detail/${album?.id}`);
+      return;
+    }
+    if (user) {
+      navigate(`/profile/${user?.id}`);
+      return;
+    }
+    if (favorite) {
+      navigate(`/favorite`);
+      return;
+    }
   };
 
   return (
@@ -29,10 +46,7 @@ const LibraryItem = ({ album, user, favorite, isFooter }) => {
         {!isFooter && (
           <button
             className="absolute inset-0 flex items-center justify-center bg-opacity-40 rounded z-10 opacity-0 group-   hover:opacity-100 transition duration-200"
-            onClick={() => {
-              setCurrentSong(data);
-              console.log(data);
-            }}
+            onClick={handChooseItem}
           >
             <Play size={24} className="text-white" />
           </button>
@@ -45,7 +59,9 @@ const LibraryItem = ({ album, user, favorite, isFooter }) => {
         <span className="text-gray-400 text-xs">
           {handeTypeData()}
           {(album || favorite) &&
-            ` - ${album?.name || `${favorite?.total || 0} bài hát`}`}
+            ` - ${
+              album?.name || `${favorite?.total || favorite?.length} bài hát`
+            }`}
         </span>
       </div>
       {isFooter && (

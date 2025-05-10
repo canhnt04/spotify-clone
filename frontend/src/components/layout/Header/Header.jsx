@@ -75,7 +75,7 @@ const Header = () => {
                     <MenuItem
                       onClick={() => setVisible(false)}
                       header
-                      to={"/profile"}
+                      to={`/profile/${userInfo?.id}`}
                       title={"Hồ sơ"}
                       icon={<SquareArrowOutUpRight size={18} />}
                     />
@@ -99,7 +99,7 @@ const Header = () => {
                   className="h-[48px] w-[48px] overflow-hidden p-1 flex items-center justify-center rounded-full bg-[#1f1f1f] hover:scale-103 cursor-pointer"
                 >
                   <img
-                    src={userInfo.avatar !== "null" ? userInfo.avatar : avatar}
+                    src={userInfo.avatar !== null ? userInfo.avatar : avatar}
                     alt="avatar"
                     className="w-full h-full rounded-full object-center"
                   />

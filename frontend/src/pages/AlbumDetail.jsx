@@ -11,6 +11,7 @@ import {
   Pencil,
   Share,
   Link,
+  Library,
 } from "lucide-react";
 import SongList from "../components/ui/List/SongList";
 import { getSongById } from "../apis/songService";
@@ -19,6 +20,12 @@ import Tippy from "@tippyjs/react/headless";
 import Dropdown from "../components/ui/Dropdown/Dropdown";
 import MenuItem from "../components/ui/Dropdown/MenuItem";
 import { StoreContext } from "../contexts/StoreProvider";
+import Button from "../components/ui/Button/Button";
+import {
+  addAlbumToLibrary,
+  deleteAlbumToLibrary,
+} from "../apis/libraryService";
+import { ToastContext } from "../contexts/ToastContext";
 
 const AlbumDetail = () => {
   const { id } = useParams();
@@ -26,7 +33,44 @@ const AlbumDetail = () => {
   const [songs, setSongs] = useState([]);
   const [visible, setVisible] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
-  const { userInfo } = useContext(StoreContext);
+  const { userInfo, library, fetchMyLibrary } = useContext(StoreContext);
+  const { toast } = useContext(ToastContext);
+
+  const isInLibrary = library?.albums?.find((item) => item.id === id);
+
+  const handAddItemToLibrary = async () => {
+    try {
+      const res = await addAlbumToLibrary(id);
+      if (res.data && res.status == 201) {
+        toast.success(res.data.message);
+
+        try {
+          await fetchMyLibrary(); // Nếu lỗi ở đây, toast vẫn hiển thị
+        } catch (fetchError) {
+          console.error("Failed to fetch library:", fetchError);
+        }
+      }
+    } catch (error) {
+      toast.error(error?.message || "Lỗi thêm album vào thư viện");
+    }
+  };
+
+  const handleAlbumToLibrary = async () => {
+    try {
+      const res = await deleteAlbumToLibrary(id);
+      if (res.data && res.status == 200) {
+        toast.success(res.data.message);
+        try {
+          await fetchMyLibrary(); // Cập nhật lại UI component thư viện
+        } catch (fetchError) {
+          console.error("Failed to fetch library:", fetchError);
+        }
+      }
+    } catch (error) {
+      toast.error(error?.message || "Lỗi xóa album khỏi thư viện");
+    }
+  };
+
   useEffect(() => {
     const fetchDetailAlbum = async () => {
       try {
@@ -61,6 +105,24 @@ const AlbumDetail = () => {
 
       {/* Navbar */}
       <div className="profile_action mx-2 mt-10 flex items-center gap-4">
+        {!isInLibrary ? (
+          <Button
+            onClick={handAddItemToLibrary}
+            themes="bg-transparent"
+            className={"border border-white text-white hover:bg-transparent"}
+          >
+            Thêm vào thư viện
+          </Button>
+        ) : (
+          <Button
+            onClick={handleAlbumToLibrary}
+            themes="bg-transparent"
+            className={"border border-white text-white hover:bg-transparent"}
+          >
+            Xóa khỏi thư viện
+          </Button>
+        )}
+
         <Tippy
           placement="bottom-start"
           interactive

@@ -1,15 +1,20 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Play,
   MoreHorizontal,
   Pause,
   PawPrint,
   PlayCircle,
+  Trash,
 } from "lucide-react";
+
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 import formatTime from "../../../utils/formatTime";
 import { StoreContext } from "../../../contexts/StoreProvider";
-const SongList = ({ songs }) => {
+const SongList = ({ songs, fetchDeleteFavoriteSong }) => {
   const { currentSong, setCurrentSong } = useContext(StoreContext);
+  useEffect(() => {}, [songs]);
   return (
     <div className="my-4 px-6 py-4 text-sm">
       {songs.map((song, index) => (
@@ -50,9 +55,20 @@ const SongList = ({ songs }) => {
           {/* Right: Explicit, plus, duration, options */}
           <div className="flex items-center gap-4 text-zinc-400 shrink-0">
             <span>{formatTime(song?.duration)}</span>
-            <button>
-              <MoreHorizontal size={16} className="cursor-pointer" />
-            </button>
+            {fetchDeleteFavoriteSong ? (
+              <Tippy content="Xóa khỏi danh sách">
+                <button
+                  className="cursor-pointer hover:scale-110 transition"
+                  onClick={() => fetchDeleteFavoriteSong(song.id)}
+                >
+                  <Trash size={16} className="cursor-pointer" />
+                </button>
+              </Tippy>
+            ) : (
+              <button className="cursor-pointer hover:scale-110 transition">
+                <MoreHorizontal size={16} className="cursor-pointer" />
+              </button>
+            )}
           </div>
         </div>
       ))}

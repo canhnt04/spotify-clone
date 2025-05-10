@@ -1,10 +1,13 @@
-import React from "react";
-
+import { useContext } from "react";
+import { StoreContext } from "../../../contexts/StoreProvider";
+import favoriteImage from "../../../assets/images/favorite_song.jpg";
 const InfoProfile = ({ info, isAlbum }) => {
+  const { defaulAvatar } = useContext(StoreContext);
   const getImageSrc = () => {
     if (info?.thumbnail_url) return info.thumbnail_url;
-    if (info?.avatar && info.avatar !== "null") return info.avatar;
-    return undefined;
+    if (info?.avatar) return info.avatar;
+    if (isAlbum) return favoriteImage;
+    return defaulAvatar;
   };
   return (
     <div className="header-accout_page flex items-center gap-10">
@@ -21,11 +24,11 @@ const InfoProfile = ({ info, isAlbum }) => {
       </div>
       <div className="infomation flex flex-col gap-4">
         <h1 className="font-extrabold text-7xl">
-          {info?.full_name || info?.name}
+          {info?.full_name || info?.name || "Bài hát yêu thích"}
         </h1>
-        {!isAlbum && (
+        {isAlbum && (
           <span className="mx-2 text-sm font-bold hover:underline cursor-pointer">
-            1 album
+            {isAlbum.count} {" bài hát"}
           </span>
         )}
       </div>

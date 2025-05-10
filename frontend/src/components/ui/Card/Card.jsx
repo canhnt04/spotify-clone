@@ -28,6 +28,11 @@ const Card = ({
       return;
     }
 
+    if (artistType) {
+      navigate(`/profile/${id}`);
+      return;
+    }
+
     if (showDetailAlbum) {
       navigate(`/album/detail/${id}`);
       return;

@@ -1,9 +1,42 @@
-import { HeartPlus, Play } from "lucide-react";
-import { useContext } from "react";
+import { HeartMinus, HeartPlus, Play, Plus } from "lucide-react";
+import { useContext, useEffect } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
-const Song = ({ data, isFooter, className, onClickFooter }) => {
-  const { currentSong, setCurrentSong } = useContext(StoreContext);
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import { addFavoriteSong, deleteFavoriteSong } from "../../../apis/songService";
+import { ToastContext } from "../../../contexts/ToastContext";
 
+const Song = ({ data, isFooter, className, onClickFooter }) => {
+  const { currentSong, setCurrentSong, favoriteSongs, fetchFavoriteSongs } =
+    useContext(StoreContext);
+  const { toast } = useContext(ToastContext);
+  const isExsitsFavoriteSong = favoriteSongs?.find(
+    (item) => item.id == data.id
+  );
+
+  const handleAddAndDeleteFavoriteSong = async () => {
+    const action = isExsitsFavoriteSong ? "delete" : "add";
+    const songId = data.id;
+
+    try {
+      let res;
+      if (action === "add") {
+        res = await addFavoriteSong(songId);
+      } else {
+        res = await deleteFavoriteSong(songId);
+      }
+
+      if (res?.data) {
+        await fetchFavoriteSongs();
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Đã xảy ra lỗi");
+    }
+  };
+  useEffect(() => {
+    console.log("Song in footer re-render");
+  }, [favoriteSongs]);
   return (
     <div
       className={
@@ -44,12 +77,24 @@ const Song = ({ data, isFooter, className, onClickFooter }) => {
         <span className="text-gray-400 text-xs">{data?.artist || ""}</span>
       </div>
       {isFooter && (
-        <button
-          className="ml-2 border border-gray-600 bg-red-500 hover:bg-[#2a2a2a] rounded-full w-6 h-6 flex items-center justify-center text-xs text-white cursor-pointer"
-          onClick={onClickFooter}
+        <Tippy
+          content={
+            !isExsitsFavoriteSong
+              ? "Thêm vào Bài yêu thích"
+              : "Xóa khỏi Bài hát yêu"
+          }
         >
-          <HeartPlus size={14} />
-        </button>
+          <button
+            className="ml-2 border-2 border-gray-600 [#2a2a2a] rounded-full w-6 h-6 flex items-center justify-center text-xs text-white cursor-pointer"
+            onClick={handleAddAndDeleteFavoriteSong}
+          >
+            {!isExsitsFavoriteSong ? (
+              <HeartPlus size={14} strokeWidth={3} />
+            ) : (
+              <HeartMinus size={14} strokeWidth={3} />
+            )}
+          </button>
+        </Tippy>
       )}
     </div>
   );

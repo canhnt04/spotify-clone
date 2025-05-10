@@ -16,4 +16,8 @@ const getListUser = async () => {
   return await axiosClient.get("/user-list/");
 };
 
-export { register, login, getMyInfo, getListUser };
+const getInfoProfile = async (id) => {
+  return await axiosClient.get(`/profile/other/${id}`);
+};
+
+export { register, login, getMyInfo, getListUser, getInfoProfile };
