@@ -45,6 +45,7 @@ class addUserLibrarySerializer(serializers.ModelSerializer):
         user = self.context["user"]
         saved_user = self.context["saved_user"]
 
+        
         if Library.objects.filter(user=user, saved_user=saved_user).exists():
             raise serializers.ValidationError(
                 {"user": f"{saved_user.last_name} {saved_user.first_name} đã tồn tại!"}

@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework_simplejwt.tokens import AccessToken
 from .validators import FileValidator
 from .serializers import (
     LoginSerializer,
@@ -30,18 +30,19 @@ class LoginAPIView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data["user"]
-            refresh = RefreshToken.for_user(user)
+            access_token = AccessToken.for_user(user)
 
             return Response(
                 {
                     "message": "Đăng nhập thành công!",
-                    "refreshToken": str(refresh),
-                    "accessToken": str(refresh.access_token),
+                    "accessToken": str(access_token),
                     "userId": str(user.id),
                     "full_name": f"{user.last_name} {user.first_name}",
+                    "role": "admin" if user.is_superuser else "user",
                 },
                 status=status.HTTP_200_OK,
             )
+
         return Response(
             {
                 "message": "Đăng nhập thất bại!",
