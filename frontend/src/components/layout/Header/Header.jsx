@@ -1,16 +1,13 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import logo from "../../../assets/images/logo.jpg";
 import avatar from "../../../assets/images/default_avatar.jpg";
 import {
   Download,
-  Home,
   LogOut,
   MessageSquareWarning,
   MessagesSquare,
   Music4,
-  Navigation,
-  Send,
   SquareArrowOutUpRight,
 } from "lucide-react";
 import Search from "../../ui/Search/Search";
@@ -75,7 +72,7 @@ const Header = () => {
                     <MenuItem
                       onClick={() => setVisible(false)}
                       header
-                      to={"/profile"}
+                      to={`/profile/${userInfo?.id}`}
                       title={"Hồ sơ"}
                       icon={<SquareArrowOutUpRight size={18} />}
                     />
@@ -99,7 +96,7 @@ const Header = () => {
                   className="h-[48px] w-[48px] overflow-hidden p-1 flex items-center justify-center rounded-full bg-[#1f1f1f] hover:scale-103 cursor-pointer"
                 >
                   <img
-                    src={userInfo.avatar !== "null" ? userInfo.avatar : avatar}
+                    src={userInfo.avatar !== null ? userInfo.avatar : avatar}
                     alt="avatar"
                     className="w-full h-full rounded-full object-center"
                   />

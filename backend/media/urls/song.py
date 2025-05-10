@@ -8,6 +8,7 @@ from media.views.song import (
     SongDeleteAPIView,
     SongUpdateAPIView,
     SongListenAPIView,
+    SongListProfileUserAPIView
 )
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
     path("song/delete/<str:song_id>/", SongDeleteAPIView.as_view()),
     path("song/list/", SongListAPIView.as_view()),
     path("song/list/user/", SongListUserAPIView.as_view()),
+    path("song/list/user/<str:user_id>/", SongListProfileUserAPIView.as_view()),
     path("song/detail/<str:song_id>/", SongDetailAPIView.as_view()),
     path("song/search/<str:search>/", SongSearchSerializer.as_view()),
     path("song/listen/<str:song_id>/", SongListenAPIView.as_view()),

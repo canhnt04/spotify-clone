@@ -7,6 +7,8 @@ import CommingSoon from "../pages/CommingSoon";
 import HeaderOnly from "../layouts/HeaderOnly";
 import UploadSong from "../pages/UploadSong";
 import AlbumDetail from "../pages/AlbumDetail";
+import FavoriteSong from "../pages/FavoriteSong";
+import VideoDetail from "../pages/VideoDetail";
 
 export const routes = [
   // public route
@@ -15,7 +17,14 @@ export const routes = [
   { path: "/login", element: Login, layout: null, isPrivate: false },
   { path: "/signin", element: Signin, layout: null, isPrivate: false },
   // private route
-  { path: "/profile", element: Profile, isPrivate: true },
+  { path: "/profile/:id", element: Profile, isPrivate: true },
+  { path: "/favorite", element: FavoriteSong, isPrivate: true },
+  {
+    path: "/video/:id",
+    element: VideoDetail,
+    layout: HeaderOnly,
+    isPrivate: true,
+  },
   {
     path: "/song/upload",
     element: UploadSong,

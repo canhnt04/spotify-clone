@@ -6,12 +6,15 @@ import Card from "../components/ui/Card/Card";
 import Loading from "../components/ui/Loading/Loading";
 import { StoreContext } from "../contexts/StoreProvider";
 import { getAllAlbum } from "../apis/albumService";
+import { useSong } from "../components/hooks/useSong";
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { userInfo, currentSong } = useContext(StoreContext);
   const [songs, setSongs] = useState([]);
   const [users, setUsers] = useState([]);
   const [albums, setAlbums] = useState(null);
+  const [videos, setVideos] = useState(null);
+  const { getVideoSong } = useSong();
 
   const fetchListSongs = async () => {
     setIsLoading(true);
@@ -52,10 +55,18 @@ const Home = () => {
     } catch (error) {}
   };
 
+  const fetchListVideoSong = async () => {
+    const listVideoSong = await getVideoSong();
+    if (listVideoSong) {
+      setVideos(listVideoSong);
+    }
+  };
+
   useEffect(() => {
     fetchListSongs();
     fetchListUsers();
     fetchListAlbum();
+    fetchListVideoSong();
   }, []);
 
   return (
@@ -92,6 +103,23 @@ const Home = () => {
             data={item}
             artistType={false}
             showDetailAlbum={true}
+            hidePlayButton={false}
+            showModalIfUnauth={false}
+          />
+        )}
+      </Swipper>
+
+      <Swipper
+        data={videos}
+        itemPerPage={currentSong ? 4 : 6}
+        showNavigation={true}
+        title={"Video âm nhạc"}
+      >
+        {(item) => (
+          <Card
+            isVideo
+            data={item}
+            artistType={false}
             hidePlayButton={false}
             showModalIfUnauth={false}
           />

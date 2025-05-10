@@ -1,21 +1,62 @@
 import { useContext, useState } from "react";
 
 import Tippy from "@tippyjs/react/headless";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Dropdown from "../Dropdown/Dropdown";
-import { CopyIcon, Ellipsis, Pencil } from "lucide-react";
+import { CopyIcon, Ellipsis, Pencil, UserCheck, UserPlus } from "lucide-react";
 import Button from "../Button/Button";
 import MenuItem from "../Dropdown/MenuItem";
 import { StoreContext } from "../../../contexts/StoreProvider";
+import { useParams } from "react-router-dom";
+import {
+  addUserToLibrary,
+  deleteUserToLibrary,
+} from "../../../apis/libraryService";
 
-const Navbar = ({ info, setVisibleModal }) => {
+const Navbar = ({ info, isMyProfile, setVisibleModal }) => {
   const [visible, setVisible] = useState();
-  const { userInfo } = useContext(StoreContext);
-  useEffect(() => console.log(visible), []);
+  const [isExsitsLibrary, setIsExsitsLibrary] = useState(null);
+  const { id } = useParams();
+  const { library, fetchMyLibrary } = useContext(StoreContext);
+  const isExsits = library?.users?.find((item) => item.id == id);
+
+  const fetchFollowUser = async () => {
+    console.log("fetchFollowUser called");
+    try {
+      const res = await addUserToLibrary(id);
+      if (res.data && res.status == 201) {
+        await fetchMyLibrary();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchUnFollowUser = async () => {
+    console.log("fetchUnFollowUser called");
+    try {
+      const res = await deleteUserToLibrary(id);
+      if (res.data && res.status == 200) {
+        await fetchMyLibrary();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Component navbar user re-render");
+    setIsExsitsLibrary(isExsits);
+  }, [library]);
+
   return (
     <div className="profile_action mx-2 my-10 flex items-center gap-4">
-      {userInfo?.id !== info?.id && (
-        <Button to={"/chat"} className="message">
+      {!isMyProfile && (
+        <Button
+          to={"/chat"}
+          themes="bg-transparent"
+          className={"border border-white text-white hover:bg-transparent"}
+        >
           Nhắn tin
         </Button>
       )}
@@ -26,16 +67,44 @@ const Navbar = ({ info, setVisibleModal }) => {
         onClickOutside={() => setVisible(false)}
         render={(attrs) => (
           <Dropdown tabIndex="-1" {...attrs}>
-            <MenuItem
-              onClick={() => {
-                setVisibleModal(true);
-                setVisible(false);
-              }}
-              title={"Chỉnh sửa hồ sơ"}
-              icon={<Pencil size={18} />}
-            />
-
-            <MenuItem title={"Sao chép URI"} icon={<CopyIcon size={18} />} />
+            {isMyProfile ? (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    setVisibleModal(true);
+                    setVisible(false);
+                  }}
+                  title={"Cập nhật thông tin"}
+                  icon={<Pencil size={18} />}
+                />
+                <MenuItem
+                  onClick={() => {}}
+                  title={"Copy URL profile"}
+                  icon={<CopyIcon size={18} />}
+                />
+              </>
+            ) : (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    !isExsitsLibrary ? fetchFollowUser() : fetchUnFollowUser();
+                  }}
+                  title={!isExsitsLibrary ? "Theo dõi" : "Bỏ theo dõi"}
+                  icon={
+                    !isExsitsLibrary ? (
+                      <UserPlus size={18} />
+                    ) : (
+                      <UserCheck size={18} />
+                    )
+                  }
+                />
+                <MenuItem
+                  onClick={() => {}}
+                  title={"Copy URL profile"}
+                  icon={<CopyIcon size={18} />}
+                />
+              </>
+            )}
           </Dropdown>
         )}
       >

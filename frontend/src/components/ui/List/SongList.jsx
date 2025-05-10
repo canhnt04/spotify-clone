@@ -1,15 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Play,
   MoreHorizontal,
   Pause,
   PawPrint,
   PlayCircle,
+  Trash,
 } from "lucide-react";
+
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 import formatTime from "../../../utils/formatTime";
 import { StoreContext } from "../../../contexts/StoreProvider";
-const SongList = ({ songs }) => {
+import ScaleLoader from "react-spinners/ScaleLoader";
+const SongList = ({ songs, fetchDeleteFavoriteSong }) => {
   const { currentSong, setCurrentSong } = useContext(StoreContext);
+  useEffect(() => {}, [songs]);
   return (
     <div className="my-4 px-6 py-4 text-sm">
       {songs.map((song, index) => (
@@ -23,9 +29,21 @@ const SongList = ({ songs }) => {
           <div className="flex items-center gap-4 flex-1">
             <div className="w-6 h-6 text-center shrink-0 relative group">
               {currentSong?.id === song?.id ? (
-                <button>
-                  <Pause size={20} className="text-green-500" />
-                </button>
+                <div className="relative">
+                  <ScaleLoader
+                    color={"green"}
+                    loading={true}
+                    height={12}
+                    radius={20}
+                    width={2}
+                    barCount={4}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
+                  <button className="absolute inset-0 m-auto hidden group-hover:flex items-center justify-center">
+                    <Pause size={20} className="text-green" />
+                  </button>
+                </div>
               ) : (
                 <>
                   <button
@@ -50,9 +68,20 @@ const SongList = ({ songs }) => {
           {/* Right: Explicit, plus, duration, options */}
           <div className="flex items-center gap-4 text-zinc-400 shrink-0">
             <span>{formatTime(song?.duration)}</span>
-            <button>
-              <MoreHorizontal size={16} className="cursor-pointer" />
-            </button>
+            {fetchDeleteFavoriteSong ? (
+              <Tippy content="Xóa khỏi danh sách">
+                <button
+                  className="cursor-pointer hover:scale-110 transition"
+                  onClick={() => fetchDeleteFavoriteSong(song.id)}
+                >
+                  <Trash size={16} className="cursor-pointer" />
+                </button>
+              </Tippy>
+            ) : (
+              <button className="cursor-pointer hover:scale-110 transition">
+                <MoreHorizontal size={16} className="cursor-pointer" />
+              </button>
+            )}
           </div>
         </div>
       ))}

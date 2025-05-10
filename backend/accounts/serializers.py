@@ -89,7 +89,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "avatar"]
+        fields = ["id", "username", "last_name", "first_name", "email", "avatar"]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -101,6 +101,8 @@ class ProfileSerializer(serializers.ModelSerializer):
                 ("id", data.get("id", "")),
                 ("username", data.get("username", "")),
                 ("email", data.get("email", "")),
+                ("last_name", data.get("last_name", "")),
+                ("first_name", data.get("first_name", "")),
                 ("full_name", data.get("full_name", "")),
                 ("avatar", data.get("avatar")),
             ]
@@ -129,7 +131,7 @@ class ProfileAllSerializer(serializers.ModelSerializer):
 class ProfileOtherSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "avatar"]
+        fields = ["id", "last_name", "first_name", "avatar"]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -139,6 +141,8 @@ class ProfileOtherSerializer(serializers.ModelSerializer):
         return OrderedDict(
             [
                 ("id", data.get("id", "")),
+                ("last_name", data.get("last_name", "")),
+                ("first_name", data.get("first_name", "")),
                 ("full_name", data.get("full_name", "")),
                 ("avatar", data.get("avatar")),
             ]

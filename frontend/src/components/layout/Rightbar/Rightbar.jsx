@@ -1,19 +1,11 @@
-import Button from "../../ui/Button/Button";
-import { HeartPlus, HeartPulse, ListMusic, Plus, Upload } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Song from "../../ui/Song/Song";
-import Tippy from "@tippyjs/react/headless";
-import Dropdown from "../../ui/Dropdown/Dropdown";
-import MenuItem from "../../ui/Dropdown/MenuItem";
-import MyModal from "../../ui/MyModal/MyModal";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
 import { getSongs } from "../../../apis/songService";
 import SimpleBar from "simplebar-react";
 
 const Rightbar = () => {
-  const [visible, setVisible] = useState(false);
-  const [visibleModal, setVisibleModal] = useState(false);
-
   const { currentSong, playList, setPlayList } = useContext(StoreContext);
 
   const getSongNextPlay = async () => {
@@ -31,14 +23,21 @@ const Rightbar = () => {
     }
   };
 
+  const motionObj = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 20 },
+    transition: { duration: 0.4 },
+  };
+
   useEffect(() => {
     console.log("Current song: ", currentSong);
     getSongNextPlay();
-  }, []);
+  }, [currentSong]);
   return (
-    <>
+    <AnimatePresence>
       {currentSong && (
-        <div className="w-[353px] bg-[#121212] rounded-2xl">
+        <div className="w-[300px] bg-[#121212] rounded-2xl">
           <SimpleBar
             style={{
               maxHeight: 550,
@@ -46,30 +45,32 @@ const Rightbar = () => {
               padding: "32px 16px",
             }}
           >
-            <div className="w-full group mb-2">
+            <motion.div {...motionObj} className="w-full group mb-2">
               <img
                 src={currentSong.thumbnail_url}
-                className="w-full aspect-square object-cover mb-2 rounded-sm"
+                className="w-full aspect-square object-contain mb-2 rounded-sm"
               />
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
-                  <span className="text-2xl font-extrabold">
+                  <span className="text-xl font-extrabold">
                     {currentSong.title}
                   </span>
-                  <p className="text-sm font-bold">{currentSong.artist}</p>
+                  <p className="text-xs font-bold">{currentSong.artist}</p>
                 </div>
-                <HeartPlus size={20} />
               </div>
-            </div>
+            </motion.div>
             <h2 className="mt-4 text-xl font-bold">Danh sách chờ</h2>
-            <div className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+            <motion.div
+              {...motionObj}
+              className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400"
+            >
               {playList.length > 0 &&
                 playList.map((song) => <Song key={song.id} data={song} />)}
-            </div>
+            </motion.div>
           </SimpleBar>
         </div>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 

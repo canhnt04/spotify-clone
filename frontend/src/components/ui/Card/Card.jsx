@@ -15,6 +15,7 @@ const Card = ({
   onPlay,
   showDetailAlbum,
   showModalIfUnauth = true,
+  isVideo,
 }) => {
   const navigate = useNavigate();
   const { userInfo, setCurrentSong } = useContext(StoreContext);
@@ -28,10 +29,21 @@ const Card = ({
       return;
     }
 
+    if (artistType) {
+      navigate(`/profile/${id}`);
+      return;
+    }
+
     if (showDetailAlbum) {
       navigate(`/album/detail/${id}`);
       return;
     }
+
+    if (isVideo) {
+      navigate(`/video/${id}`);
+      return;
+    }
+
     if (onPlay) onPlay(data);
     else setCurrentSong(data);
   };

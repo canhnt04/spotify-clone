@@ -1,7 +1,12 @@
 import { HeartPlus, Play } from "lucide-react";
 import favoriteImage from "../../../assets/images/favorite_song.jpg";
-const LibraryItem = ({ album, user, favorite, isFooter }) => {
-  const handeTypeData = () => {
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { StoreContext } from "../../../contexts/StoreProvider";
+const LibraryItem = ({ album, user, favorite, video, isFooter }) => {
+  const navigate = useNavigate();
+  const { defaulAvatar } = useContext(StoreContext);
+  const handleTypeData = () => {
     let type = "";
     if (album) {
       return (type = "Album");
@@ -12,40 +17,64 @@ const LibraryItem = ({ album, user, favorite, isFooter }) => {
     if (favorite) {
       return (type = "Danh sách phát");
     }
+
+    if (video) {
+      return (type = video?.artist);
+    }
+
     return "";
   };
 
+  const handChooseItem = () => {
+    if (video) {
+      console.log(video?.id);
+      navigate(`/video/${video?.id}`);
+      return;
+    }
+    if (album) {
+      navigate(`/album/detail/${album?.id}`);
+      return;
+    }
+    if (user) {
+      navigate(`/profile/${user?.id}`);
+      return;
+    }
+    if (favorite) {
+      navigate(`/favorite`);
+      return;
+    }
+  };
+
+  const handleImageSrc = () => {
+    if (album?.thumbnail_url) return album?.thumbnail_url;
+    if (video?.thumbnail_url) return video?.thumbnail_url;
+    if (user || user?.avatar) return user?.avatar || defaulAvatar;
+    return favoriteImage;
+  };
+
   return (
-    <div className="group flex items-center gap-4 my-2 p-2 cursor-pointer rounded-md hover:bg-[#2a2a2a] transition">
+    <div
+      className="group flex items-center gap-4 my-2 p-2 cursor-pointer rounded-md hover:bg-[#2a2a2a] transition"
+      onClick={handChooseItem}
+    >
       <div className="relative w-14 h-14">
         {/* Ảnh nằm dưới */}
         <img
-          src={album?.thumbnail_url || user?.avatar || favoriteImage}
+          src={handleImageSrc()}
           alt="image"
           className={`w-full h-full ${user ? "rounded-full" : "rounded"} z-0`}
         />
-
-        {/* Play icon đè lên và hiện khi hover */}
-        {!isFooter && (
-          <button
-            className="absolute inset-0 flex items-center justify-center bg-opacity-40 rounded z-10 opacity-0 group-   hover:opacity-100 transition duration-200"
-            onClick={() => {
-              setCurrentSong(data);
-              console.log(data);
-            }}
-          >
-            <Play size={24} className="text-white" />
-          </button>
-        )}
       </div>
       <div className="flex flex-col">
         <span className="text-white text-sm font-semibold line-clamp-1">
-          {album?.name || user?.full_name || "Bài hát đã thích"}
+          {album?.name || video?.title || user?.full_name || "Bài hát đã thích"}
         </span>
         <span className="text-gray-400 text-xs">
-          {handeTypeData()}
+          {handleTypeData()}
           {(album || favorite) &&
-            ` - ${album?.name || `${favorite?.total || 0} bài hát`}`}
+            ` - ${
+              album?.name || `${favorite?.total || favorite?.length} bài hát`
+            }`}
         </span>
       </div>
       {isFooter && (

@@ -1,8 +1,22 @@
-import { HeartPlus, Play } from "lucide-react";
-import { useContext } from "react";
+import { HeartMinus, HeartPlus, Play, Plus } from "lucide-react";
+import { useContext, useEffect } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+import { addFavoriteSong, deleteFavoriteSong } from "../../../apis/songService";
+import { ToastContext } from "../../../contexts/ToastContext";
+import { useFavoriteSong } from "../../hooks/useFavoriteSong";
+
 const Song = ({ data, isFooter, className, onClickFooter }) => {
-  const { currentSong, setCurrentSong } = useContext(StoreContext);
+  const { currentSong, setCurrentSong, favoriteSongs, fetchFavoriteSongs } =
+    useContext(StoreContext);
+
+  const { checkIsExsitSongInLibrary, handleAddAndDeleteFavoriteSong } =
+    useFavoriteSong();
+
+  useEffect(() => {
+    console.log("Song in footer re-render");
+  }, [favoriteSongs]);
 
   return (
     <div
@@ -44,12 +58,24 @@ const Song = ({ data, isFooter, className, onClickFooter }) => {
         <span className="text-gray-400 text-xs">{data?.artist || ""}</span>
       </div>
       {isFooter && (
-        <button
-          className="ml-2 border border-gray-600 bg-red-500 hover:bg-[#2a2a2a] rounded-full w-6 h-6 flex items-center justify-center text-xs text-white cursor-pointer"
-          onClick={onClickFooter}
+        <Tippy
+          content={
+            !checkIsExsitSongInLibrary(data?.id)
+              ? "Thêm vào Bài yêu thích"
+              : "Xóa khỏi Bài hát yêu"
+          }
         >
-          <HeartPlus size={14} />
-        </button>
+          <button
+            className="ml-2 border-2 border-gray-600 [#2a2a2a] rounded-full w-6 h-6 flex items-center justify-center text-xs text-white cursor-pointer"
+            onClick={() => handleAddAndDeleteFavoriteSong(data?.id)}
+          >
+            {!checkIsExsitSongInLibrary(data?.id) ? (
+              <HeartPlus size={14} strokeWidth={3} />
+            ) : (
+              <HeartMinus size={14} strokeWidth={3} />
+            )}
+          </button>
+        </Tippy>
       )}
     </div>
   );

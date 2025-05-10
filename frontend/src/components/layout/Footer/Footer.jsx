@@ -4,12 +4,7 @@ import {
   Pause,
   SkipForward,
   SkipBack,
-  Shuffle,
   Volume2,
-  ListMusic,
-  Maximize2,
-  Mic2,
-  LayoutList,
   Download,
 } from "lucide-react";
 import { StoreContext } from "../../../contexts/StoreProvider";
@@ -18,6 +13,7 @@ import Song from "../../ui/Song/Song";
 import formatTime from "../../../utils/formatTime";
 import { addFavoriteSong } from "../../../apis/songService";
 import { ToastContext } from "../../../contexts/ToastContext";
+import { useFavoriteSong } from "../../hooks/useFavoriteSong";
 const Footer = () => {
   const { userInfo, currentSong, setCurrentSong, playList } =
     useContext(StoreContext);
@@ -52,6 +48,8 @@ const Footer = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
 
+  const { handleAddAndDeleteFavoriteSong } = useFavoriteSong();
+
   useEffect(() => {
     const audio = audioRef.current;
     setIsPlaying(false);
@@ -82,17 +80,6 @@ const Footer = () => {
     setIsPlaying(true);
   };
 
-  const handleAddFavoriteSong = async () => {
-    try {
-      const res = await addFavoriteSong(currentSong?.id);
-      if (res.data && res.data.favorite) {
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      toast.error(error);
-    }
-  };
-
   const handleDownload = async () => {
     try {
       const response = await fetch(currentSong.audio_url);
@@ -118,7 +105,6 @@ const Footer = () => {
         className={"flex items-center gap-3 w-1/3 min-w-0"}
         data={currentSong}
         isFooter
-        onClickFooter={handleAddFavoriteSong}
       />
 
       {/* Center */}

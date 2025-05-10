@@ -7,6 +7,7 @@ module.exports = {
       colors: {
         primary: "#1f1f1f",
         secondary: "#2b2b2b",
+        green: "#1ed760",
         // Thêm các màu tùy chỉnh khác nếu cần
       },
       heights: {

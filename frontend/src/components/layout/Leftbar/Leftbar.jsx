@@ -8,37 +8,33 @@ import MyModal from "../../ui/MyModal/MyModal";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
 import CreateAlbumForm from "../../form/CreateAlbumForm";
-import { getMyAlbum } from "../../../apis/albumService";
 import LibraryItem from "../../ui/LibraryItem/LibraryItem";
 
 import SimpleBar from "simplebar-react";
+import { useNavigate } from "react-router-dom";
+import UploadVideoSong from "../../form/UploadVideoSong";
 
 const Leftbar = () => {
   const [visible, setVisible] = useState(false);
-  const [visibleModal, setVisibleModal] = useState(false);
-  const { userInfo } = useContext(StoreContext);
-
-  const [albums, setAlbums] = useState(null);
+  const [visibleModal, setVisibleModal] = useState({
+    visible: false,
+    form: null,
+  });
+  const { userInfo, library, favoriteSongs } = useContext(StoreContext);
 
   useEffect(() => {
-    const getAlbum = async () => {
-      await getMyAlbum()
-        .then((res) => {
-          setAlbums(res.data.albums);
-        })
-        .catch((error) => console.log(error));
-    };
-    getAlbum();
-  }, []);
+    console.log("Conponent leftbar re-render: ", library);
+  }, [library]);
+
   return (
     <div className="w-[353px] bg-[#121212] py-4 rounded-2xl">
       <MyModal
-        open={visibleModal}
+        open={visibleModal.visible}
         setOpen={setVisibleModal}
         onClose={() => setVisibleModal(false)}
         isLoading
       >
-        <CreateAlbumForm setVisibleModal={setVisibleModal} />
+        {visibleModal.form}
       </MyModal>
       <div className="h-[40px] flex items-center px-4 justify-between">
         <h2 className="text-lg font-bold">Thư viện</h2>
@@ -56,15 +52,37 @@ const Leftbar = () => {
                   <ListMusic
                     size={24}
                     onClick={() => {
-                      setVisibleModal(true);
+                      setVisibleModal({
+                        visible: true,
+                        form: (
+                          <CreateAlbumForm setVisibleModal={setVisibleModal} />
+                        ),
+                      });
                       setVisible(false);
                     }}
                   />
                 }
               />
               <MenuItem
+                title={"Upload video"}
+                icon={
+                  <Upload
+                    size={24}
+                    onClick={() => {
+                      setVisible(false);
+                      setVisibleModal({
+                        visible: true,
+                        form: (
+                          <UploadVideoSong setVisibleModal={setVisibleModal} />
+                        ),
+                      });
+                    }}
+                  />
+                }
+              />
+              <MenuItem
                 to={"/song/upload"}
-                title={"Upload bài hát/video"}
+                title={"Upload bài hát"}
                 icon={<Upload size={24} />}
               />
             </Dropdown>
@@ -83,58 +101,22 @@ const Leftbar = () => {
         </Tippy>
       </div>
 
-      {userInfo ? (
+      {(userInfo && favoriteSongs?.length > 0) ||
+      library?.users?.length > 0 ||
+      library?.albums?.length > 0 ? (
         <SimpleBar
           style={{ maxHeight: 500, height: "max-content", padding: "0 20px" }}
         >
           <div className="rounded-lg mt-4 flex flex-col ">
-            {/* {albums &&
-                albums?.map((album) => <Song key={album.id} data={album} />)} */}
-            <LibraryItem
-              album={{
-                thumbnail_url:
-                  "http://res.cloudinary.com/dsohleblh/v1746625759/idj3fpfb3fdedxesfymc.jpg",
-                name: "Đánh đổi",
-              }}
-            />
-            <LibraryItem
-              user={{
-                avatar:
-                  "http://res.cloudinary.com/dsohleblh/v1746459820/om24yhqpywifxkkc3mua.jpg",
-                full_name: "Lê Phúc",
-              }}
-            />
-            <LibraryItem favorite />
-            <LibraryItem
-              album={{
-                thumbnail_url:
-                  "http://res.cloudinary.com/dsohleblh/v1746625759/idj3fpfb3fdedxesfymc.jpg",
-                name: "Đánh đổi",
-              }}
-            />
+            {favoriteSongs?.length > 0 && (
+              <LibraryItem favorite={favoriteSongs} />
+            )}
 
-            <LibraryItem
-              user={{
-                avatar:
-                  "http://res.cloudinary.com/dsohleblh/v1746459820/om24yhqpywifxkkc3mua.jpg",
-                full_name: "Lê Phúc",
-              }}
-            />
-            <LibraryItem
-              album={{
-                thumbnail_url:
-                  "http://res.cloudinary.com/dsohleblh/v1746625759/idj3fpfb3fdedxesfymc.jpg",
-                name: "Đánh đổi",
-              }}
-            />
+            {library.albums &&
+              library.albums?.map((album) => <LibraryItem album={album} />)}
 
-            <LibraryItem
-              user={{
-                avatar:
-                  "http://res.cloudinary.com/dsohleblh/v1746459820/om24yhqpywifxkkc3mua.jpg",
-                full_name: "Lê Phúc",
-              }}
-            />
+            {library.users &&
+              library.users?.map((user) => <LibraryItem user={user} />)}
           </div>
         </SimpleBar>
       ) : (
