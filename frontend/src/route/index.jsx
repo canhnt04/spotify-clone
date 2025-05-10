@@ -8,6 +8,7 @@ import HeaderOnly from "../layouts/HeaderOnly";
 import UploadSong from "../pages/UploadSong";
 import AlbumDetail from "../pages/AlbumDetail";
 import FavoriteSong from "../pages/FavoriteSong";
+import VideoDetail from "../pages/VideoDetail";
 
 export const routes = [
   // public route
@@ -18,6 +19,12 @@ export const routes = [
   // private route
   { path: "/profile/:id", element: Profile, isPrivate: true },
   { path: "/favorite", element: FavoriteSong, isPrivate: true },
+  {
+    path: "/video/:id",
+    element: VideoDetail,
+    layout: HeaderOnly,
+    isPrivate: true,
+  },
   {
     path: "/song/upload",
     element: UploadSong,

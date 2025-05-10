@@ -12,6 +12,7 @@ import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
 import formatTime from "../../../utils/formatTime";
 import { StoreContext } from "../../../contexts/StoreProvider";
+import ScaleLoader from "react-spinners/ScaleLoader";
 const SongList = ({ songs, fetchDeleteFavoriteSong }) => {
   const { currentSong, setCurrentSong } = useContext(StoreContext);
   useEffect(() => {}, [songs]);
@@ -28,9 +29,21 @@ const SongList = ({ songs, fetchDeleteFavoriteSong }) => {
           <div className="flex items-center gap-4 flex-1">
             <div className="w-6 h-6 text-center shrink-0 relative group">
               {currentSong?.id === song?.id ? (
-                <button>
-                  <Pause size={20} className="text-green-500" />
-                </button>
+                <div className="relative">
+                  <ScaleLoader
+                    color={"green"}
+                    loading={true}
+                    height={12}
+                    radius={20}
+                    width={2}
+                    barCount={4}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
+                  <button className="absolute inset-0 m-auto hidden group-hover:flex items-center justify-center">
+                    <Pause size={20} className="text-green" />
+                  </button>
+                </div>
               ) : (
                 <>
                   <button

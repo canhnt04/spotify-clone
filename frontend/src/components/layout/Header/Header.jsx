@@ -1,16 +1,13 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import logo from "../../../assets/images/logo.jpg";
 import avatar from "../../../assets/images/default_avatar.jpg";
 import {
   Download,
-  Home,
   LogOut,
   MessageSquareWarning,
   MessagesSquare,
   Music4,
-  Navigation,
-  Send,
   SquareArrowOutUpRight,
 } from "lucide-react";
 import Search from "../../ui/Search/Search";

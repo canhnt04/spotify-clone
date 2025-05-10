@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { getMyInfo } from "../apis/authService";
 import { getFavoriteSongs } from "../apis/songService";
 import defaulAvatar from "../assets/images/default_avatar.jpg";
+import defaultVideo from "../assets/videos/video.mp4";
 import { getLibrary } from "../apis/libraryService";
 export const StoreContext = createContext();
 
@@ -80,6 +81,7 @@ const StoreProvider = ({ children }) => {
     <StoreContext.Provider
       value={{
         defaulAvatar,
+        defaultVideo,
         userInfo,
         library,
         currentSong,

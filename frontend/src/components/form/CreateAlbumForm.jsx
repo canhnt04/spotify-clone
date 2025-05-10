@@ -1,5 +1,5 @@
 import { Image, ImageUp, Trash, Upload, X } from "lucide-react";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import useImagePreview from "../hooks/useImagePreview";
 import Button from "../ui/Button/Button";
 import { postAlbum } from "../../apis/albumService";
@@ -33,7 +33,7 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
       const res = await postAlbum(form);
       if (res.data && res.status == 201) {
         toast.success(res.data.message);
-        setVisibleModal(false);
+        setVisibleModal({ visible: false, form: null });
         setIsLoading(false);
       }
     } catch (error) {
@@ -53,7 +53,7 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
     <div className="w-max mx-auto bg-[#282828] p-4 m-2 rounded-xl">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Tạo album</h1>
-        <button onClick={() => setVisibleModal(false)}>
+        <button onClick={() => setVisibleModal({ visible: false, form: null })}>
           <X size={20} />
         </button>
       </div>

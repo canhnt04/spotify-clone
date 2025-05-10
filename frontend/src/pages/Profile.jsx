@@ -8,13 +8,13 @@ import { StoreContext } from "../contexts/StoreProvider";
 // Import Swiper styles
 import Card from "../components/ui/Card/Card";
 import Swipper from "../components/ui/Swipper/Swipper";
-import { getMyListSong } from "../apis/songService";
 import MyModal from "../components/ui/MyModal/MyModal";
 import UpdateProfileForm from "../components/form/UpdateProfileForm";
 import InfoProfile from "../components/ui/Profile/InfoProfile";
 import Navbar from "../components/ui/Profile/Navbar";
 import { useParams } from "react-router-dom";
 import { getInfoProfile } from "../apis/authService";
+import { useSong } from "../components/hooks/useSong";
 const Profile = ({ data }) => {
   const { id } = useParams();
   const [visibleModal, setVisibleModal] = useState(false);
@@ -23,21 +23,22 @@ const Profile = ({ data }) => {
 
   const { userInfo, currentSong, favoriteSongs } = useContext(StoreContext);
 
+  const { getListSongOfuser } = useSong();
+
   const isMyProfile = userInfo?.id === id;
 
   useEffect(() => {
-    const getMyListSongs = async () => {
+    const fetchSongUpload = async () => {
       try {
-        // Gọi api từ songService
-        const res = await getMyListSong(id);
-        if (res?.data && res?.data.data) {
-          setSongs(res.data.data);
-          console.log("Danh sách bài hát của tôi:", res.data.data);
+        const data = await getListSongOfuser(id);
+        if (data) {
+          setSongs(data); // ✅ Cập nhật biến songs ở đây
         }
       } catch (error) {
-        console.log(error);
+        console.error("Lỗi khi lấy danh sách bài hát:", error);
       }
     };
+
     const fetchInfoProfile = async () => {
       try {
         if (isMyProfile) {
@@ -53,7 +54,7 @@ const Profile = ({ data }) => {
         console.log(error);
       }
     };
-    getMyListSongs();
+    fetchSongUpload();
     fetchInfoProfile();
   }, [id]);
 

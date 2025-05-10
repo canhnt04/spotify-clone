@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import { useEffect } from "react";
 import Dropdown from "../Dropdown/Dropdown";
-import { CopyIcon, Ellipsis, Pencil, Plus } from "lucide-react";
+import { CopyIcon, Ellipsis, Pencil, UserCheck, UserPlus } from "lucide-react";
 import Button from "../Button/Button";
 import MenuItem from "../Dropdown/MenuItem";
 import { StoreContext } from "../../../contexts/StoreProvider";
@@ -12,7 +12,6 @@ import {
   addUserToLibrary,
   deleteUserToLibrary,
 } from "../../../apis/libraryService";
-import { ToastContext } from "../../../contexts/ToastContext";
 
 const Navbar = ({ info, isMyProfile, setVisibleModal }) => {
   const [visible, setVisible] = useState();
@@ -37,7 +36,7 @@ const Navbar = ({ info, isMyProfile, setVisibleModal }) => {
     console.log("fetchUnFollowUser called");
     try {
       const res = await deleteUserToLibrary(id);
-      if (res.data && res.status == 201) {
+      if (res.data && res.status == 200) {
         await fetchMyLibrary();
       }
     } catch (error) {
@@ -91,7 +90,13 @@ const Navbar = ({ info, isMyProfile, setVisibleModal }) => {
                     !isExsitsLibrary ? fetchFollowUser() : fetchUnFollowUser();
                   }}
                   title={!isExsitsLibrary ? "Theo dõi" : "Bỏ theo dõi"}
-                  icon={<Plus size={18} />}
+                  icon={
+                    !isExsitsLibrary ? (
+                      <UserPlus size={18} />
+                    ) : (
+                      <UserCheck size={18} />
+                    )
+                  }
                 />
                 <MenuItem
                   onClick={() => {}}

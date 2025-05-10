@@ -4,7 +4,7 @@ const getSongs = async () => {
   return await axiosClient.get("/song/list/");
 };
 
-const getMyListSong = async (id) => {
+const getListSongOfUser = async (id) => {
   return await axiosClient.get(`/song/list/user/${id}/`);
 };
 
@@ -33,7 +33,7 @@ const deleteFavoriteSong = async (id) => {
 export {
   upload,
   getSongs,
-  getMyListSong,
+  getListSongOfUser,
   getSongById,
   getFavoriteSongs,
   addFavoriteSong,
