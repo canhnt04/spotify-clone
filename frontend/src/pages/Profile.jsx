@@ -71,14 +71,16 @@ const Profile = ({ data }) => {
           setVisibleModal={setVisibleModal}
         />
         {/* Song/> */}
-        <Swipper
-          data={songs}
-          itemPerPage={currentSong ? 3 : 5}
-          showNavigation={true}
-          title={"Đã tải lên"}
-        >
-          {(item) => <Card data={item} />}
-        </Swipper>
+        {songs?.length > 0 && (
+          <Swipper
+            data={songs}
+            itemPerPage={currentSong ? 3 : 5}
+            showNavigation={true}
+            title={"Đã tải lên"}
+          >
+            {(item) => <Card data={item} />}
+          </Swipper>
+        )}
         {/* Favorite song */}
         {isMyProfile && favoriteSongs?.length > 0 && (
           <Swipper

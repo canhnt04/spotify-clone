@@ -20,4 +20,20 @@ const getInfoProfile = async (id) => {
   return await axiosClient.get(`/profile/other/${id}`);
 };
 
-export { register, login, getMyInfo, getListUser, getInfoProfile };
+const banUser = async (id) => {
+  return await axiosClient.post(`/user-ban/${id}/`);
+};
+
+const unBanUser = async (id) => {
+  return await axiosClient.post(`/user-unban/${id}/`);
+};
+
+export {
+  register,
+  login,
+  getMyInfo,
+  getListUser,
+  getInfoProfile,
+  banUser,
+  unBanUser,
+};

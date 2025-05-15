@@ -10,6 +10,7 @@ import AlbumDetail from "../pages/AlbumDetail";
 import FavoriteSong from "../pages/FavoriteSong";
 import VideoDetail from "../pages/VideoDetail";
 import Admin from "../pages/Admin";
+import AdminLayout from "../layouts/AdminLayout";
 
 export const routes = [
   // public route
@@ -20,7 +21,7 @@ export const routes = [
   // private route
   { path: "/profile/:id", element: Profile, isPrivate: true },
   { path: "/favorite", element: FavoriteSong, isPrivate: true },
-  { path: "/admin", element: Admin, layout: HeaderOnly, isPrivate: true },
+  { path: "/admin", element: Admin, layout: AdminLayout, isPrivate: true },
   {
     path: "/video/:id",
     element: VideoDetail,

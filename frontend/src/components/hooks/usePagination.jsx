@@ -20,6 +20,7 @@ const usePagination = (data = [], itemsPerPage = 10) => {
 
   return {
     currentPage,
+    setCurrentPage,
     currentData,
     pageCount,
     handlePageChange,

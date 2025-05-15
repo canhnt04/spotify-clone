@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { getListUser } from "../../apis/authService";
+import { getListUser, banUser, unBanUser } from "../../apis/authService";
 import { StoreContext } from "../../contexts/StoreProvider";
 
 export const useAuth = () => {
@@ -16,5 +16,35 @@ export const useAuth = () => {
     }
   }, []);
 
-  return { getListUsers };
+  const ban = useCallback(async (id) => {
+    try {
+      const res = await banUser(id);
+      if (res?.data && res?.status === 200) {
+        return {
+          message: res?.data?.message,
+          status: true,
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }, []);
+
+  const unBan = useCallback(async (id) => {
+    try {
+      const res = await unBanUser(id);
+      if (res?.data && res?.status === 200) {
+        return {
+          message: res?.data?.message,
+          status: true,
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }, []);
+
+  return { getListUsers, ban, unBan };
 };
