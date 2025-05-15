@@ -1,49 +1,65 @@
-# spotify-clone
+# Hướng dẫn cài đặt FRONTEND
 
-# Mở terminal với quyền administrator
+## 1. Tại thư mục gốc spotify-clone
+
+cd frontend
+
+## 2. Mở terminal và gõ lệnh
+
+npm i
+
+## 3. Sau khi các package cần thiết được cài đặt thì gõ lệnh sau
+
+npm run dev
+
+## 4. Terminal sẽ hiện đường link để chạy ứng dụng trên trình duyệt (VD: https://localhost:5173)
+
+# Hướng dẫn cài đặt BACKEND
+
+## 1. Mở terminal với quyền administrator
 
 Set-ExecutionPolicy RemoteSigned
 
-# Tạo virtual environment
+## 2. Tạo virtual environment
 
 python -m venv venv
 
-# Kích hoạt môi trường ảo (PowerShell)
+## 3. Kích hoạt môi trường ảo (PowerShell)
 
 .\venv\Scripts\Activate.ps1
 
-# Cài đặt các thư viện cần thiết
+## 4. Cài đặt các thư viện cần thiết
 
 pip install -r requirements.txt
 
-# Di chuyển vào thư mục backend
+## 5. Di chuyển vào thư mục backend
 
 cd spotify-clone/backend
 
-# Setup file migrations
+## 6. Setup file migrations
 
 python manage.py makemigrations
 
-# Chạy migration để tạo các bảng trong CSDL
+## 7. Chạy migration để tạo các bảng trong CSDL
 
 python manage.py migrate
 
-# (Tùy chọn) Tạo tài khoản admin để đăng nhập trang quản trị
+## (Tùy chọn) Tạo tài khoản admin để đăng nhập trang quản trị
 
 python manage.py createsuperuser
 
-# Chạy server
+## 8. Chạy server
 
 python manage.py runserver
 
-# Hủy môi trường ảo
+## 9. Hủy môi trường ảo
 
 deactivate
 
-# Export database
+## 10. Export database
 
 python manage.py dumpdata --indent 4 > data.json
 
-# Import database
+## 11. Import database
 
 python manage.py loaddata data.json
