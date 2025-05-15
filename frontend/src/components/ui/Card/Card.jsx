@@ -4,8 +4,6 @@ import { StoreContext } from "../../../contexts/StoreProvider";
 import avatarDefault from "../../../assets/images/default_avatar.jpg";
 import MyModal from "../MyModal/MyModal";
 import Button from "../Button/Button";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import useGetRecentSong from "../../hooks/useGetRecentSong";
 import { useNavigate } from "react-router-dom";
 
 const Card = ({
@@ -23,6 +21,8 @@ const Card = ({
   const { id, avatar, title, full_name, name, artist, thumbnail_url } =
     data || {};
 
+  const isVideoCard = data?.video_url ? true : false;
+
   const handePlay = () => {
     if (!userInfo && showModalIfUnauth) {
       setVisible(true);
@@ -39,7 +39,7 @@ const Card = ({
       return;
     }
 
-    if (isVideo) {
+    if (isVideo || isVideoCard) {
       navigate(`/video/${id}`);
       return;
     }
@@ -51,8 +51,13 @@ const Card = ({
   return (
     <div
       key={id}
-      className="bg-[#181818] p-2 rounded hover:bg-[#282828] transition"
+      className="bg-[#181818] p-2 rounded group hover:bg-[#282828] transition"
     >
+      <div className="absolute right-0 top-0 bg-green z-1000 rounded-sm hidden group-hover:block transition-all duration-200">
+        {isVideoCard && (
+          <p className="text-white text-xs font-bold p-1">Video</p>
+        )}
+      </div>
       {/* Modal nếu chưa đăng nhập */}
       <MyModal
         open={visible}

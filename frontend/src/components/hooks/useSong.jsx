@@ -1,11 +1,13 @@
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import {
   getListSongOfUser,
   getSongById,
   getSongs,
 } from "../../apis/songService";
+import { StoreContext } from "../../contexts/StoreProvider";
 
 export const useSong = () => {
+  const { userInfo } = useContext(StoreContext);
   // Lấy danh sách bài hát của người dùng đang đang nhập
   const getListSongOfuser = useCallback(async (id) => {
     try {
@@ -28,13 +30,16 @@ export const useSong = () => {
       const res = await getSongs();
       if (res?.data && res?.data.data) {
         const list = res.data.data;
-        let video = [];
-        list?.map((item) => {
-          if (item.audio_url == null) {
-            video.push(item);
-          }
-        });
-        return video;
+
+        return list?.filter((item) => item.video_url != null);
+
+        // let video = [];
+        // list?.map((item) => {
+        //   if (item.audio_url == null) {
+        //     video.push(item);
+        //   }
+        // });
+        // return video;
       }
     } catch (error) {
       console.log(error);

@@ -4,11 +4,11 @@ import { StoreContext } from "../contexts/StoreProvider";
 
 const RouteWrapper = ({ children, isPrivate }) => {
   const { userInfo } = useContext(StoreContext);
-  console.log("userInfo :", userInfo);
 
   let isLogin = false;
 
   const id = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
 
   if (userInfo && userInfo?.id === id) {
     isLogin = true;
@@ -16,9 +16,15 @@ const RouteWrapper = ({ children, isPrivate }) => {
 
   const currentPath = window.location.pathname;
 
+  console.log("currentPath :", currentPath);
+
   // Nếu là private route mà không có token thì redirect đến login
   if (isPrivate && !isLogin) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (role === "admin" && userInfo?.id === id && currentPath !== "/admin") {
+    return <Navigate to="/admin" replace />;
   }
 
   // Chỉ chặn vào các trang như /login, /signin nếu đã login

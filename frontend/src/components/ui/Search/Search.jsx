@@ -8,7 +8,7 @@ const Search = () => {
       <SearchIcon size={26} className="mr-2" />
       <Input
         type="text"
-        placeholder="Bạn muốn phát nội dung gì?"
+        placeholder="Tìm kiếm"
         className="bg-transparent text-sm placeholder-gray-600"
       />
     </div>

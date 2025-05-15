@@ -7,6 +7,7 @@ import Loading from "../components/ui/Loading/Loading";
 import { StoreContext } from "../contexts/StoreProvider";
 import { getAllAlbum } from "../apis/albumService";
 import { useSong } from "../components/hooks/useSong";
+import { useAuth } from "../components/hooks/useAuth";
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { userInfo, currentSong } = useContext(StoreContext);
@@ -15,6 +16,7 @@ const Home = () => {
   const [albums, setAlbums] = useState(null);
   const [videos, setVideos] = useState(null);
   const { getVideoSong } = useSong();
+  const { getListUsers } = useAuth();
 
   const fetchListSongs = async () => {
     setIsLoading(true);
@@ -33,15 +35,10 @@ const Home = () => {
 
   const fetchListUsers = async () => {
     setIsLoading(true);
-    try {
-      const res = await getListUser();
-      if (res?.data && res?.data.users) {
-        setUsers(res.data.users);
-        setIsLoading(false);
-      }
-    } catch (error) {
+    const res = await getListUsers();
+    if (res) {
       setIsLoading(false);
-      console.log(error);
+      setUsers(res);
     }
   };
 

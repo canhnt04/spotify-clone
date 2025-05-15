@@ -80,7 +80,7 @@ const Profile = ({ data }) => {
           {(item) => <Card data={item} />}
         </Swipper>
         {/* Favorite song */}
-        {isMyProfile && (
+        {isMyProfile && favoriteSongs?.length > 0 && (
           <Swipper
             data={favoriteSongs}
             itemPerPage={currentSong ? 3 : 5}

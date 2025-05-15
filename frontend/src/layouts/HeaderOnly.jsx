@@ -1,4 +1,3 @@
-import React from "react";
 import Header from "../components/layout/Header/Header";
 
 const HeaderOnly = ({ children }) => {
@@ -8,7 +7,7 @@ const HeaderOnly = ({ children }) => {
       <Header />
 
       {/* Content */}
-      <main className="flex-1 overflow-y-auto mt-20 mx-6 bg-[#181818] rounded-2xl">
+      <main className="flex-1 mt-20 mx-6 bg-[#181818] rounded-lg">
         {children}
       </main>
     </div>

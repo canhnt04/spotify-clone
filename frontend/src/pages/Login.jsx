@@ -28,8 +28,14 @@ const Login = () => {
         setIsLoading(false);
         localStorage.setItem("accessToken", res.data.accessToken);
         localStorage.setItem("userId", res.data.userId);
+        localStorage.setItem("role", res.data.role);
         toast.success(res.data.message);
-        setTimeout(() => (window.location.href = "/"), 2000);
+        localStorage.setItem("role", res.data.role);
+        setTimeout(() => {
+          res.data.role === "user"
+            ? (window.location.href = "/")
+            : (window.location.href = "/admin");
+        }, 1500);
       }
     } catch (error) {
       setIsLoading(false);

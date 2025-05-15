@@ -32,6 +32,7 @@ const VideoDetail = () => {
   };
 
   useEffect(() => {
+    console.log(data);
     fetchVideoDetail();
     fetchListVideoSong();
   }, [id]);
@@ -104,7 +105,7 @@ const VideoDetail = () => {
               <div className="m-2">
                 <h4 className="text-md font-bold">Được đề xuất</h4>
                 {videos?.map((video) => (
-                  <LibraryItem video={video} />
+                  <LibraryItem key={video.id} video={video} />
                 ))}
               </div>
             </div>

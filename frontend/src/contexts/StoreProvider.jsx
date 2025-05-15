@@ -49,17 +49,19 @@ const StoreProvider = ({ children }) => {
 
   // Lấy danh sách bài hát yêu thích của người dùng đang dăng nhập
   const fetchFavoriteSongs = async () => {
-    console.log("API Favorite song called.");
+    if (userInfo) {
+      console.log("API Favorite song called.");
 
-    try {
-      const res = await getFavoriteSongs();
-      if (res.data) {
-        const favorite = res.data.favorites;
-        setFavoriteSongs(favorite);
+      try {
+        const res = await getFavoriteSongs();
+        if (res.data) {
+          const favorite = res.data.favorites;
+          setFavoriteSongs(favorite);
+        }
+      } catch (error) {
+        setFavoriteSongs([]);
+        console.log(error);
       }
-    } catch (error) {
-      setFavoriteSongs([]);
-      console.log(error);
     }
   };
 
