@@ -164,7 +164,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 class GetAllUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "avatar"]
+        fields = ["id", "username", "email", "avatar", "is_active"]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -176,6 +176,7 @@ class GetAllUserSerializer(serializers.ModelSerializer):
                 ("email", data.get("email", "")),
                 ("full_name", data.get("full_name", "")),
                 ("avatar", data.get("avatar")),
+                ("is_active", data.get("is_active")),
             ]
         )
 
