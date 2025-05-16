@@ -13,12 +13,17 @@ import "tippy.js/dist/tippy.css";
 import formatTime from "../../../utils/formatTime";
 import { StoreContext } from "../../../contexts/StoreProvider";
 import ScaleLoader from "react-spinners/ScaleLoader";
-const SongList = ({ songs, fetchDeleteFavoriteSong }) => {
+
+const SongList = ({
+  songs,
+  fetchDeleteFavoriteSong,
+  fetchDeleteSongFromAlbum,
+}) => {
   const { currentSong, setCurrentSong } = useContext(StoreContext);
   useEffect(() => {}, [songs]);
   return (
     <div className="my-4 px-6 py-4 text-sm">
-      {songs.map((song, index) => (
+      {songs?.map((song, index) => (
         <div
           key={song.id}
           className={`flex items-center justify-between my-4 px-4 py-2 hover:bg-zinc-800 rounded transition ${
@@ -78,8 +83,11 @@ const SongList = ({ songs, fetchDeleteFavoriteSong }) => {
                 </button>
               </Tippy>
             ) : (
-              <button className="cursor-pointer hover:scale-110 transition">
-                <MoreHorizontal size={16} className="cursor-pointer" />
+              <button
+                className="cursor-pointer hover:scale-110 transition"
+                onClick={() => fetchDeleteSongFromAlbum(song.id)}
+              >
+                <Trash size={16} className="cursor-pointer" />
               </button>
             )}
           </div>

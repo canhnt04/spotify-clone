@@ -59,14 +59,6 @@ const Rightbar = () => {
                 </div>
               </div>
             </motion.div>
-            <h2 className="mt-4 text-xl font-bold">Danh sách chờ</h2>
-            <motion.div
-              {...motionObj}
-              className="rounded-lg mt-4 flex flex-col h-[calc(100vh-150px)] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400"
-            >
-              {playList.length > 0 &&
-                playList.map((song) => <Song key={song.id} data={song} />)}
-            </motion.div>
           </SimpleBar>
         </div>
       )}

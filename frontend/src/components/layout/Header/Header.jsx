@@ -54,13 +54,6 @@ const Header = () => {
           </a>
           {userInfo ? (
             <>
-              <Link
-                to={"/"}
-                className="h-full w-[48px] px-2 py-[11px] flex items-center justify-center rounded-full bg-[#1f1f1f] hover:scale-103"
-              >
-                <MessagesSquare strokeWidth={1.5} size={24} />
-              </Link>
-
               <Tippy
                 interactive
                 appendTo={() => document.body}

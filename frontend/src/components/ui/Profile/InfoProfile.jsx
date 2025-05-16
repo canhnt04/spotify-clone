@@ -1,7 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
 import favoriteImage from "../../../assets/images/favorite_song.jpg";
-const InfoProfile = ({ info, isAlbum }) => {
+const InfoProfile = ({ info, songs, isAlbum }) => {
   const { defaulAvatar } = useContext(StoreContext);
   const getImageSrc = () => {
     if (info?.thumbnail_url) return info.thumbnail_url;
@@ -9,6 +9,8 @@ const InfoProfile = ({ info, isAlbum }) => {
     if (isAlbum) return favoriteImage;
     return defaulAvatar;
   };
+
+  useEffect(() => {}, [songs]);
   return (
     <div className="header-accout_page flex items-center gap-10">
       <div
@@ -28,7 +30,7 @@ const InfoProfile = ({ info, isAlbum }) => {
         </h1>
         {isAlbum && (
           <span className="mx-2 text-sm font-bold hover:underline cursor-pointer">
-            {isAlbum.count} {" bài hát"}
+            {songs?.length || isAlbum?.count} {" bài hát"}
           </span>
         )}
       </div>

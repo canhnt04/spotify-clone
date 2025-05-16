@@ -15,6 +15,7 @@ import Navbar from "../components/ui/Profile/Navbar";
 import { useParams } from "react-router-dom";
 import { getInfoProfile } from "../apis/authService";
 import { useSong } from "../components/hooks/useSong";
+
 const Profile = ({ data }) => {
   const { id } = useParams();
   const [visibleModal, setVisibleModal] = useState(false);

@@ -1,21 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import InfoProfile from "../components/ui/Profile/InfoProfile";
-import { useParams } from "react-router-dom";
-import { getDetailAlbum } from "../apis/albumService";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  Play,
-  Plus,
-  MoreHorizontal,
-  Trash,
-  Ellipsis,
-  Pencil,
-  Share,
-  Link,
-  Library,
-} from "lucide-react";
+  deleteAlbum,
+  deleteSongFromAlbum,
+  getDetailAlbum,
+} from "../apis/albumService";
+import { Plus, Trash, Ellipsis, Pencil, Link } from "lucide-react";
 import SongList from "../components/ui/List/SongList";
 import { getSongById } from "../apis/songService";
-import Navbar from "../components/ui/Profile/Navbar";
 import Tippy from "@tippyjs/react/headless";
 import Dropdown from "../components/ui/Dropdown/Dropdown";
 import MenuItem from "../components/ui/Dropdown/MenuItem";
@@ -26,19 +19,27 @@ import {
   deleteAlbumToLibrary,
 } from "../apis/libraryService";
 import { ToastContext } from "../contexts/ToastContext";
+import MyModal from "../components/ui/MyModal/MyModal";
+import AddSongToAlbum from "../components/form/AddSongToAlbum";
+import UpdateAlbum from "../components/form/UpdateAlbum";
 
 const AlbumDetail = () => {
   const { id } = useParams();
   const [album, setAlbum] = useState(null);
   const [songs, setSongs] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [visibleModal, setVisibleModal] = useState(false);
+  const [visibleModal, setVisibleModal] = useState({
+    visible: false,
+    component: null,
+  });
   const { userInfo, library, fetchMyLibrary } = useContext(StoreContext);
   const { toast } = useContext(ToastContext);
+  const navigate = useNavigate();
 
   const isInLibrary = library?.albums?.find((item) => item.id === id);
 
-  const handAddItemToLibrary = async () => {
+  // Hàm xử lý thêm album vào thư viện (left bar)
+  const handleAddAlbumToLibrary = async () => {
     try {
       const res = await addAlbumToLibrary(id);
       if (res.data && res.status == 201) {
@@ -55,7 +56,8 @@ const AlbumDetail = () => {
     }
   };
 
-  const handleAlbumToLibrary = async () => {
+  // Hàm xử lý xóa album khỏi thư viện (left bar)
+  const handleDeleteAlbumToLibrary = async () => {
     try {
       const res = await deleteAlbumToLibrary(id);
       if (res.data && res.status == 200) {
@@ -71,43 +73,81 @@ const AlbumDetail = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchDetailAlbum = async () => {
-      try {
-        const res = await getDetailAlbum(id);
-        if (res.data && res.status === 200) {
-          const albumData = res.data.album;
-          setAlbum(albumData);
-
-          const songPromises = albumData.songs.map((songId) =>
-            getSongById(songId)
-          );
-          const songResponses = await Promise.all(songPromises);
-
-          const tmpSongs = songResponses
-            .filter((res) => res.data && res.status === 200)
-            .map((res) => res.data.data);
-
-          setSongs(tmpSongs);
-        }
-      } catch (error) {
-        console.error("error :", error);
+  // Hàm xử lý xóa album
+  const handleDeleteAlbum = async () => {
+    try {
+      const res = await deleteAlbum(album?.id);
+      if (res.status === 204) {
+        toast.success("Xóa album thành công");
+        navigate("/");
       }
-    };
+    } catch (error) {
+      toast.error(error.data.message);
+      console.log(error);
+    }
+  };
 
+  // Hàm xóa một bài hát khỏi album
+  const fetchDeleteSongFromAlbum = async (songId) => {
+    try {
+      const res = await deleteSongFromAlbum(album.id, songId);
+
+      if (res.data && res.status === 200) {
+        toast.success(res.data.message);
+        console.log(songs);
+        setSongs((prev) => prev.filter((item) => item.id !== songId));
+      }
+    } catch (error) {
+      toast.error(error.data.message);
+    }
+  };
+
+  const fetchDetailAlbum = async () => {
+    try {
+      const res = await getDetailAlbum(id);
+      if (res.data && res.status === 200) {
+        const albumData = res.data.album;
+        setAlbum(albumData);
+
+        const songPromises = albumData.songs.map((songId) =>
+          getSongById(songId)
+        );
+        const songResponses = await Promise.all(songPromises);
+
+        const tmpSongs = songResponses
+          .filter((res) => res.data && res.status === 200)
+          .map((res) => res.data.data);
+
+        setSongs(tmpSongs);
+      }
+    } catch (error) {
+      console.error("error :", error);
+    }
+  };
+
+  useEffect(() => {
     fetchDetailAlbum();
   }, [id]);
 
   return (
     <div>
+      {/* Modal */}
+      <MyModal
+        open={visibleModal.visible}
+        onClose={() => setVisibleModal((prev) => ({ ...prev, visible: false }))}
+        isLoading
+      >
+        {visibleModal.component}
+      </MyModal>
+
       {/* Infomation album */}
-      <InfoProfile info={album} isAlbum />
+      <InfoProfile info={album} songs={songs} isAlbum />
 
       {/* Navbar */}
       <div className="profile_action mx-2 mt-10 flex items-center gap-4">
         {!isInLibrary ? (
           <Button
-            onClick={handAddItemToLibrary}
+            onClick={handleAddAlbumToLibrary}
             themes="bg-transparent"
             className={"border border-white text-white hover:bg-transparent"}
           >
@@ -115,7 +155,7 @@ const AlbumDetail = () => {
           </Button>
         ) : (
           <Button
-            onClick={handleAlbumToLibrary}
+            onClick={handleDeleteAlbumToLibrary}
             themes="bg-transparent"
             className={"border border-white text-white hover:bg-transparent"}
           >
@@ -134,7 +174,17 @@ const AlbumDetail = () => {
                 <>
                   <MenuItem
                     onClick={() => {
-                      setVisibleModal(true);
+                      setVisibleModal({
+                        visible: true,
+                        component: (
+                          <AddSongToAlbum
+                            albumId={album?.id}
+                            setVisibleModal={setVisibleModal}
+                            setSongsFromParentComponent={setSongs}
+                            songsFromParentComponent={songs}
+                          />
+                        ),
+                      });
                       setVisible(false);
                     }}
                     title={"Thêm bài hát"}
@@ -142,13 +192,24 @@ const AlbumDetail = () => {
                   />
 
                   <MenuItem
-                    onClick={() => {}}
+                    onClick={() => {
+                      setVisibleModal({
+                        visible: true,
+                        component: (
+                          <UpdateAlbum
+                            data={album}
+                            setVisibleModal={setVisibleModal}
+                          />
+                        ),
+                      });
+                      setVisible(false);
+                    }}
                     title={"Cập nhật thông tin"}
                     icon={<Pencil size={18} />}
                   />
 
                   <MenuItem
-                    onClick={() => {}}
+                    onClick={() => handleDeleteAlbum()}
                     title={"Xóa album"}
                     icon={<Trash size={18} />}
                   />
@@ -178,7 +239,10 @@ const AlbumDetail = () => {
       </div>
 
       {/* Song list of album */}
-      <SongList songs={songs} />
+      <SongList
+        songs={songs}
+        fetchDeleteSongFromAlbum={fetchDeleteSongFromAlbum}
+      />
     </div>
   );
 };

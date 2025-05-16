@@ -5,6 +5,7 @@ import Button from "../ui/Button/Button";
 import { postAlbum } from "../../apis/albumService";
 import { ToastContext } from "../../contexts/ToastContext";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import { useNavigate } from "react-router-dom";
 
 const CreateAlbumForm = ({ setVisibleModal }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +16,8 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
     description: "",
     thumbnail_url: file,
   });
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +36,7 @@ const CreateAlbumForm = ({ setVisibleModal }) => {
       const res = await postAlbum(form);
       if (res.data && res.status == 201) {
         toast.success(res.data.message);
+        navigate(`/album/detail/${res.data.album.id}`);
         setVisibleModal({ visible: false, form: null });
         setIsLoading(false);
       }

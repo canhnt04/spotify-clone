@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { getMyInfo } from "../apis/authService";
 import { getFavoriteSongs } from "../apis/songService";
 import defaulAvatar from "../assets/images/default_avatar.jpg";
+import noImage from "../assets/images/no_image.png";
 import defaultVideo from "../assets/videos/video.mp4";
 import { getLibrary } from "../apis/libraryService";
 export const StoreContext = createContext();
@@ -49,19 +50,16 @@ const StoreProvider = ({ children }) => {
 
   // Lấy danh sách bài hát yêu thích của người dùng đang dăng nhập
   const fetchFavoriteSongs = async () => {
-    if (userInfo) {
-      console.log("API Favorite song called.");
-
-      try {
-        const res = await getFavoriteSongs();
-        if (res.data) {
-          const favorite = res.data.favorites;
-          setFavoriteSongs(favorite);
-        }
-      } catch (error) {
-        setFavoriteSongs([]);
-        console.log(error);
+    console.log("API Favorite song called.");
+    try {
+      const res = await getFavoriteSongs();
+      if (res.data) {
+        const favorite = res.data.favorites;
+        setFavoriteSongs(favorite);
       }
+    } catch (error) {
+      setFavoriteSongs([]);
+      console.log(error);
     }
   };
 
@@ -74,7 +72,6 @@ const StoreProvider = ({ children }) => {
       }
     };
 
-    console.log(userInfo);
     fetchMyInfo();
     fetchFavoriteSongs();
     fetchMyLibrary();
@@ -82,6 +79,7 @@ const StoreProvider = ({ children }) => {
   return (
     <StoreContext.Provider
       value={{
+        noImage,
         defaulAvatar,
         defaultVideo,
         userInfo,

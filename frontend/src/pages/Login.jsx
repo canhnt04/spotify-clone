@@ -39,8 +39,11 @@ const Login = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      toast.error("Sai tài khoản hoặc tên đăng nhập.");
-      console.log(error);
+      if (error.response?.data?.errors?.username) {
+        toast.error(error.response?.data?.errors?.username[0]);
+      } else {
+        toast.error("Sai tài khoản hoặc tên đăng nhập.");
+      }
     }
   };
 

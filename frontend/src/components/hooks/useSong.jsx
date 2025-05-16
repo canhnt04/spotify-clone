@@ -23,6 +23,22 @@ export const useSong = () => {
     }
   }, []);
 
+  // Lấy danh sách bài hát
+  const getListSong = useCallback(async (id) => {
+    try {
+      // Gọi api từ songService
+      const res = await getListSongOfUser(id);
+      if (res?.data && res?.data.data) {
+        const list = res.data.data;
+        console.log(list?.filter((item) => item.audio_url != null));
+        return list?.filter((item) => item.audio_url != null);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }, []);
+
   // Lấy danh sách video
   const getVideoSong = useCallback(async () => {
     try {
@@ -32,14 +48,6 @@ export const useSong = () => {
         const list = res.data.data;
 
         return list?.filter((item) => item.video_url != null);
-
-        // let video = [];
-        // list?.map((item) => {
-        //   if (item.audio_url == null) {
-        //     video.push(item);
-        //   }
-        // });
-        // return video;
       }
     } catch (error) {
       console.log(error);
@@ -61,5 +69,5 @@ export const useSong = () => {
     }
   }, []);
 
-  return { getListSongOfuser, getVideoSong, getDetailSongOrVideo };
+  return { getListSongOfuser, getListSong, getVideoSong, getDetailSongOrVideo };
 };

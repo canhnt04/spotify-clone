@@ -53,68 +53,47 @@ const Navbar = ({ info, isMyProfile, setVisibleModal }) => {
     <div className="profile_action mx-2 my-10 flex items-center gap-4">
       {!isMyProfile && (
         <Button
-          to={"/chat"}
+          onClick={() => {
+            !isExsitsLibrary ? fetchFollowUser() : fetchUnFollowUser();
+          }}
           themes="bg-transparent"
           className={"border border-white text-white hover:bg-transparent"}
         >
-          Nhắn tin
+          {!isExsitsLibrary ? "Theo dõi" : "Bỏ theo dõi"}
         </Button>
       )}
-      <Tippy
-        placement="bottom-end"
-        interactive
-        visible={visible}
-        onClickOutside={() => setVisible(false)}
-        render={(attrs) => (
-          <Dropdown tabIndex="-1" {...attrs}>
-            {isMyProfile ? (
-              <>
-                <MenuItem
-                  onClick={() => {
-                    setVisibleModal(true);
-                    setVisible(false);
-                  }}
-                  title={"Cập nhật thông tin"}
-                  icon={<Pencil size={18} />}
-                />
-                <MenuItem
-                  onClick={() => {}}
-                  title={"Copy URL profile"}
-                  icon={<CopyIcon size={18} />}
-                />
-              </>
-            ) : (
-              <>
-                <MenuItem
-                  onClick={() => {
-                    !isExsitsLibrary ? fetchFollowUser() : fetchUnFollowUser();
-                  }}
-                  title={!isExsitsLibrary ? "Theo dõi" : "Bỏ theo dõi"}
-                  icon={
-                    !isExsitsLibrary ? (
-                      <UserPlus size={18} />
-                    ) : (
-                      <UserCheck size={18} />
-                    )
-                  }
-                />
-                <MenuItem
-                  onClick={() => {}}
-                  title={"Copy URL profile"}
-                  icon={<CopyIcon size={18} />}
-                />
-              </>
-            )}
-          </Dropdown>
-        )}
-      >
-        <button
-          onClick={() => setVisible(!visible)}
-          className="option hover:scale-[1.1] cursor-pointer transition-all"
+      {isMyProfile && (
+        <Tippy
+          placement="bottom-end"
+          interactive
+          visible={visible}
+          onClickOutside={() => setVisible(false)}
+          render={(attrs) => (
+            <Dropdown tabIndex="-1" {...attrs}>
+              <MenuItem
+                onClick={() => {
+                  setVisibleModal(true);
+                  setVisible(false);
+                }}
+                title={"Cập nhật thông tin"}
+                icon={<Pencil size={18} />}
+              />
+              <MenuItem
+                onClick={() => {}}
+                title={"Copy URL profile"}
+                icon={<CopyIcon size={18} />}
+              />
+            </Dropdown>
+          )}
         >
-          <Ellipsis size={40} />
-        </button>
-      </Tippy>
+          <button
+            onClick={() => setVisible(!visible)}
+            className="option hover:scale-[1.1] cursor-pointer transition-all"
+          >
+            <Ellipsis size={40} />
+          </button>
+        </Tippy>
+      )}
     </div>
   );
 };

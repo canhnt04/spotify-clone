@@ -113,10 +113,14 @@ const Leftbar = () => {
             )}
 
             {library.albums &&
-              library.albums?.map((album) => <LibraryItem album={album} />)}
+              library.albums?.map((album) => (
+                <LibraryItem key={album?.id} album={album} />
+              ))}
 
             {library.users &&
-              library.users?.map((user) => <LibraryItem user={user} />)}
+              library.users?.map((user) => (
+                <LibraryItem key={user?.id} user={user} />
+              ))}
           </div>
         </SimpleBar>
       ) : (

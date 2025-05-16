@@ -1,15 +1,18 @@
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 import { HeartMinus, HeartPlus, Play, Plus } from "lucide-react";
 import { useContext, useEffect } from "react";
 import { StoreContext } from "../../../contexts/StoreProvider";
-import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css";
-import { addFavoriteSong, deleteFavoriteSong } from "../../../apis/songService";
-import { ToastContext } from "../../../contexts/ToastContext";
 import { useFavoriteSong } from "../../hooks/useFavoriteSong";
 
 const Song = ({ data, isFooter, className, onClickFooter }) => {
-  const { currentSong, setCurrentSong, favoriteSongs, fetchFavoriteSongs } =
-    useContext(StoreContext);
+  const {
+    currentSong,
+    setCurrentSong,
+    favoriteSongs,
+    fetchFavoriteSongs,
+    noImage,
+  } = useContext(StoreContext);
 
   const { checkIsExsitSongInLibrary, handleAddAndDeleteFavoriteSong } =
     useFavoriteSong();
@@ -30,10 +33,7 @@ const Song = ({ data, isFooter, className, onClickFooter }) => {
       <div className="relative w-12 h-12">
         {/* Ảnh nằm dưới */}
         <img
-          src={
-            data?.thumbnail_url ||
-            "https://i.scdn.co/image/ab67616d00001e024594668d4629f899daba689a"
-          }
+          src={data?.thumbnail_url || noImage}
           alt="song"
           className="w-full h-full rounded z-0"
         />
